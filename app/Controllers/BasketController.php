@@ -85,27 +85,39 @@ class BasketController extends Controller
 
             if ($basketItem->quantity <= 0) {
                 $basketItem->delete();
-                return JsonResponse::ok(['message' => 'Product removed from basket']);
+
+                return JsonResponse::ok([
+                    'basket_item' => null,
+                    'message' => 'Product removed from basket',
+                ]);
             }
 
             $basketItem->save();
-        } else {
-            if ($basketItem instanceof BasketItem) {
-                $basketItem->quantity += 1;
-                $basketItem->save();
-                return JsonResponse::ok(['message' => 'Product quantity updated in basket']);
-            }
 
-            $basketItem = new BasketItem();
-            $basketItem->basket_id = $basket->id;
-            $basketItem->product_id = $product->id;
-            $basketItem->quantity = 1;
-            $basketItem->save();
+            return JsonResponse::ok([
+                'basket_item' => $basketItem,
+                'message' => 'Product quantity updated in basket',
+            ]);
         }
+
+        if ($basketItem instanceof BasketItem) {
+            $basketItem->quantity += 1;
+            $basketItem->save();
+
+            return JsonResponse::ok([
+                'basket_item' => $basketItem,
+                'message' => 'Product quantity updated in basket',
+            ]);
+        }
+
+        $basketItem = new BasketItem();
+        $basketItem->basket_id = $basket->id;
+        $basketItem->product_id = $product->id;
+        $basketItem->quantity = 1;
+        $basketItem->save();
 
         return JsonResponse::created([
             'basket_item' => $basketItem,
         ]);
     }
 }
-
