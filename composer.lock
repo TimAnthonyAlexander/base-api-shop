@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "217558777657784abdbb6394410eb171",
+    "content-hash": "738e567129c4a68bcdbcc326625ecb7a",
     "packages": [
         {
             "name": "baseapi/baseapi",
-            "version": "dev-feature/ts-generation",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TimAnthonyAlexander/base-api.git",
-                "reference": "36be64aec14290611fd2b6a1c4953a7ffd6502d8"
+                "reference": "9ba3c3cd883fce6f31c2b98e1d115c60de140408"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TimAnthonyAlexander/base-api/zipball/36be64aec14290611fd2b6a1c4953a7ffd6502d8",
-                "reference": "36be64aec14290611fd2b6a1c4953a7ffd6502d8",
+                "url": "https://api.github.com/repos/TimAnthonyAlexander/base-api/zipball/9ba3c3cd883fce6f31c2b98e1d115c60de140408",
+                "reference": "9ba3c3cd883fce6f31c2b98e1d115c60de140408",
                 "shasum": ""
             },
             "require": {
@@ -67,9 +67,9 @@
             ],
             "support": {
                 "issues": "https://github.com/TimAnthonyAlexander/base-api/issues",
-                "source": "https://github.com/TimAnthonyAlexander/base-api/tree/feature/ts-generation"
+                "source": "https://github.com/TimAnthonyAlexander/base-api/tree/v1.1.0"
             },
-            "time": "2025-10-02T23:28:22+00:00"
+            "time": "2025-10-02T23:43:15+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -2481,9 +2481,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "baseapi/baseapi": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

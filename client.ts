@@ -186,7 +186,7 @@ export async function postLogin(body: Types.PostLoginRequestBody, options?: Http
 export async function postLogout(options?: HttpOptions): Promise<Types.PostLogoutResponse> {
   const url = '/auth/logout';
 
-  return http.post(url, body, options);
+  return http.post(url, options);
 }
 
 /**
@@ -206,7 +206,7 @@ export async function getMe(options?: HttpOptions): Promise<Types.GetMeResponse>
 export async function postFileUpload(options?: HttpOptions): Promise<Types.PostFileUploadResponse> {
   const url = '/files/upload';
 
-  return http.post(url, body, options);
+  return http.post(url, options);
 }
 
 /**

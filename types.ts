@@ -110,11 +110,11 @@ export interface PostLoginRequestBody {
   password?: string;
 }
 
-export type PostLoginResponse = Envelope<{ user: string[] }>;
+export type PostLoginResponse = Envelope<{ user: unknown[] }>;
 
 export type PostLogoutResponse = Envelope<{ message: string }>;
 
-export type GetMeResponse = Envelope<{ user: string[] }>;
+export type GetMeResponse = Envelope<{ user: unknown[] }>;
 
 export type PostFileUploadResponse = Envelope<{ path: string; url: string; size: number; type: string }>;
 

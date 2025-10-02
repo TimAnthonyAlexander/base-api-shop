@@ -55,7 +55,7 @@ export function useGetProductById(path: Types.GetProductByIdPathParams, query?: 
     } finally {
       setLoading(false);
     }
-  }, [enabled, ...(deps || [])]);
+  }, [enabled, JSON.stringify(path), JSON.stringify(query), ...(deps || [])]);
 
   useEffect(() => {
     fetchData();
@@ -130,7 +130,7 @@ export function useGetBasket(query?: Types.GetBasketQueryParams, options?: Query
     } finally {
       setLoading(false);
     }
-  }, [enabled, ...(deps || [])]);
+  }, [enabled, JSON.stringify(query), ...(deps || [])]);
 
   useEffect(() => {
     fetchData();
@@ -205,7 +205,7 @@ export function useGetOrder(query?: Types.GetOrderQueryParams, options?: QueryOp
     } finally {
       setLoading(false);
     }
-  }, [enabled, ...(deps || [])]);
+  }, [enabled, JSON.stringify(query), ...(deps || [])]);
 
   useEffect(() => {
     fetchData();
@@ -242,7 +242,7 @@ export function useGetOrderById(path: Types.GetOrderByIdPathParams, options?: Qu
     } finally {
       setLoading(false);
     }
-  }, [enabled, ...(deps || [])]);
+  }, [enabled, JSON.stringify(path), ...(deps || [])]);
 
   useEffect(() => {
     fetchData();
@@ -317,7 +317,7 @@ export function useGetCheckoutSuccess(query?: Types.GetCheckoutSuccessQueryParam
     } finally {
       setLoading(false);
     }
-  }, [enabled, ...(deps || [])]);
+  }, [enabled, JSON.stringify(query), ...(deps || [])]);
 
   useEffect(() => {
     fetchData();
@@ -354,7 +354,7 @@ export function useGetCheckoutCancel(query?: Types.GetCheckoutCancelQueryParams,
     } finally {
       setLoading(false);
     }
-  }, [enabled, ...(deps || [])]);
+  }, [enabled, JSON.stringify(query), ...(deps || [])]);
 
   useEffect(() => {
     fetchData();
@@ -391,7 +391,7 @@ export function useGetHealth(query?: Types.GetHealthQueryParams, options?: Query
     } finally {
       setLoading(false);
     }
-  }, [enabled, ...(deps || [])]);
+  }, [enabled, JSON.stringify(query), ...(deps || [])]);
 
   useEffect(() => {
     fetchData();

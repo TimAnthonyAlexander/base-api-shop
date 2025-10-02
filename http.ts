@@ -38,15 +38,44 @@ async function fetchApi<T>(
     signal: options?.signal,
   });
 
-  const data = await response.json();
+  // Handle 204 No Content and HEAD requests
+  if (response.status === 204 || method === 'HEAD') {
+    if (!response.ok) {
+      throw new ApiError('Request failed', response.status);
+    }
+    return undefined as T;
+  }
+
+  // Parse response based on content type
+  const contentType = response.headers.get('content-type');
+  const isJson = contentType?.includes('application/json');
+  
+  let data: any;
+  try {
+    data = isJson ? await response.json() : await response.text();
+  } catch (err) {
+    // Failed to parse response
+    if (!response.ok) {
+      throw new ApiError('Request failed', response.status);
+    }
+    throw new ApiError('Failed to parse response', response.status);
+  }
 
   if (!response.ok) {
-    throw new ApiError(
-      data.error || 'Request failed',
-      response.status,
-      data.requestId,
-      data.errors
-    );
+    // Handle error responses
+    if (typeof data === 'object' && data !== null) {
+      throw new ApiError(
+        data.error || 'Request failed',
+        response.status,
+        data.requestId,
+        data.errors
+      );
+    } else {
+      throw new ApiError(
+        typeof data === 'string' ? data : 'Request failed',
+        response.status
+      );
+    }
   }
 
   return data;
@@ -67,4 +96,10 @@ export const http = {
   
   delete: <T>(path: string, options?: HttpOptions) => 
     fetchApi<T>(path, 'DELETE', options),
+  
+  head: <T>(path: string, options?: HttpOptions) => 
+    fetchApi<T>(path, 'HEAD', options),
+  
+  options: <T>(path: string, options?: HttpOptions) => 
+    fetchApi<T>(path, 'OPTIONS', options),
 };

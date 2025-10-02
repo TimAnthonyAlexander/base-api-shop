@@ -634,7 +634,7 @@
                                                 "user": {
                                                     "type": "array",
                                                     "items": {
-                                                        "type": "string"
+                                                        "type": "object"
                                                     }
                                                 }
                                             },
@@ -743,7 +743,7 @@
                                                 "user": {
                                                     "type": "array",
                                                     "items": {
-                                                        "type": "string"
+                                                        "type": "object"
                                                     }
                                                 }
                                             },
