@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use Exception;
 use App\Models\Basket;
 use BaseApi\Controllers\Controller;
 use BaseApi\Http\JsonResponse;
@@ -26,7 +27,7 @@ class CheckoutController extends Controller
 
         // Check if basket has items
         $items = $basket->items()->get();
-        if (empty($items)) {
+        if ($items === []) {
             return JsonResponse::badRequest('Basket is empty');
         }
 
@@ -37,8 +38,8 @@ class CheckoutController extends Controller
                 'checkout_url' => $checkoutUrl,
                 'message' => 'Checkout session created successfully',
             ]);
-        } catch (\Exception $e) {
-            return JsonResponse::error('Failed to create checkout session: ' . $e->getMessage());
+        } catch (Exception $exception) {
+            return JsonResponse::error('Failed to create checkout session: ' . $exception->getMessage());
         }
     }
 

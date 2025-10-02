@@ -261,6 +261,15 @@
             "table": "basket",
             "operation": "add_column",
             "warning": null
+        },
+        {
+            "id": "mig_e5d1add4c1cc",
+            "sql": "ALTER TABLE `basket` MODIFY COLUMN `stripe_checkout` TEXT",
+            "destructive": false,
+            "generated_at": "2025-10-02T22:02:15+00:00",
+            "table": "basket",
+            "operation": "modify_column",
+            "warning": null
         }
     ]
 }

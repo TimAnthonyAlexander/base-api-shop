@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use RuntimeException;
 use Stripe\Checkout\Session;
 use Stripe\StripeClient;
 use App\Models\Basket;
@@ -16,17 +17,17 @@ use App\Models\Product;
  */
 class StripeService
 {
-    private readonly StripeClient $client;
+    private readonly StripeClient $stripeClient;
 
     public function __construct()
     {
         $apiKey = $_ENV['STRIPE_SECRET_KEY'] ?? '';
         
         if ($apiKey === '') {
-            throw new \RuntimeException('STRIPE_SECRET_KEY not configured in environment');
+            throw new RuntimeException('STRIPE_SECRET_KEY not configured in environment');
         }
 
-        $this->client = new StripeClient($apiKey);
+        $this->stripeClient = new StripeClient($apiKey);
     }
 
     /**
@@ -64,13 +65,12 @@ class StripeService
             ];
         }
 
-        return $this->client->checkout->sessions->create($sessionData);
+        return $this->stripeClient->checkout->sessions->create($sessionData);
     }
 
     /**
      * Build Stripe line items from basket items.
-     * 
-     * @param Basket $basket
+     *
      * @return array<int, array<string, mixed>>
      */
     private function buildLineItemsFromBasket(Basket $basket): array
@@ -78,10 +78,10 @@ class StripeService
         $items = BasketItem::where('basket_id', '=', $basket->id)->get();
         $lineItems = [];
 
-        foreach ($items as $baseModel) {
-            assert($baseModel instanceof BasketItem);
+        foreach ($items as $item) {
+            assert($item instanceof BasketItem);
             
-            $product = Product::find($baseModel->product_id);
+            $product = Product::find($item->product_id);
             
             if (!$product instanceof Product) {
                 continue;
@@ -102,7 +102,7 @@ class StripeService
                     'product_data' => $productData,
                     'unit_amount' => (int) ($product->price * 100), // Convert to cents
                 ],
-                'quantity' => $baseModel->quantity,
+                'quantity' => $item->quantity,
             ];
         }
 
@@ -132,7 +132,7 @@ class StripeService
      */
     public function getSession(string $sessionId): Session
     {
-        return $this->client->checkout->sessions->retrieve($sessionId);
+        return $this->stripeClient->checkout->sessions->retrieve($sessionId);
     }
 
     /**
@@ -152,10 +152,8 @@ class StripeService
         if ($description !== '') {
             $productData['description'] = $description;
         }
-        
-        $product = $this->client->products->create($productData);
 
-        return $product;
+        return $this->stripeClient->products->create($productData);
     }
 
     /**
@@ -163,7 +161,7 @@ class StripeService
      */
     public function deleteProduct(string $productId): void
     {
-        $this->client->products->delete($productId);
+        $this->stripeClient->products->delete($productId);
     }
 }
 

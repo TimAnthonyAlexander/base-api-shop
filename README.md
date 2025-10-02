@@ -11,7 +11,6 @@ The Stripe SDK is already installed via Composer:
 ```bash
 composer require stripe/stripe-php
 ```
-
 ### 2. Configure Environment Variables
 
 Add your Stripe API keys to your `.env` file:

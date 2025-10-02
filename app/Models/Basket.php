@@ -14,7 +14,15 @@ class Basket extends BaseModel
 {
     public string $user_id;
 
-    public string $stripe_checkout = '';
+    public ?string $stripe_checkout = null;
+
+    /**
+     * Define custom columns for this model
+     * @var array<string, array<string, mixed>>
+     */
+    public static array $columns = [
+        'stripe_checkout' => ['type' => 'TEXT', 'nullable' => true],
+    ];
 
     /**
      * Create a Stripe checkout session for this basket.
@@ -28,8 +36,8 @@ class Basket extends BaseModel
         $customerEmail = $user instanceof User ? $user->email : null;
 
         // Create checkout session
-        $stripe = new StripeService();
-        $session = $stripe->createCheckoutSession($this, $customerEmail);
+        $stripeService = new StripeService();
+        $session = $stripeService->createCheckoutSession($this, $customerEmail);
 
         return $session->url ?? '';
     }

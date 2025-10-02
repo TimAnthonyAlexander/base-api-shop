@@ -30,7 +30,7 @@ class BasketController extends Controller
             $basket->save();
         }
 
-        if ($basket->stripe_checkout === '') {
+        if ($basket->stripe_checkout === null || $basket->stripe_checkout === '') {
             $basket->stripe_checkout = $basket->createStripeCheckout();
             $basket->save();
         }
@@ -86,6 +86,9 @@ class BasketController extends Controller
                 return JsonResponse::notFound('Product not in basket');
             }
 
+            $basket->stripe_checkout = '';
+            $basket->save();
+
             $basketItem->quantity -= 1;
 
             if ($basketItem->quantity <= 0) {
@@ -104,6 +107,9 @@ class BasketController extends Controller
                 'message' => 'Product quantity updated in basket',
             ]);
         }
+
+        $basket->stripe_checkout = '';
+        $basket->save();
 
         if ($basketItem instanceof BasketItem) {
             $basketItem->quantity += 1;
