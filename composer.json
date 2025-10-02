@@ -36,8 +36,8 @@
         }
     },
     "scripts": {
-        "serve": "php mason serve",
-        "serve-screen": "screen -dmS baseapi php mason serve",
+        "serve-api": "screen -dmS shop-api php mason serve",
+        "serve-web": "cd web && screen -dmS shop-web npm run start-dev",
         "phpstan": "phpstan analyse --memory-limit=256M",
         "post-create-project-cmd": [
             "@php -r \"copy('.env.example', '.env');\"",
