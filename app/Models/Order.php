@@ -34,6 +34,13 @@ class Order extends BaseModel
             $orderItem->product_id = $baseModel->product_id;
             $orderItem->quantity = $baseModel->quantity;
             $orderItem->save();
+
+            // Reduce product stock
+            $product = Product::find($baseModel->product_id);
+            if ($product instanceof Product) {
+                $product->stock -= $baseModel->quantity;
+                $product->save();
+            }
         }
 
         return $order;

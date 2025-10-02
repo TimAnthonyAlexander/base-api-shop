@@ -14,10 +14,16 @@ use BaseApi\Http\JsonResponse;
  */
 class OrderController extends Controller
 {
-    public string $id;
+    public ?string $id = null;
 
     public function get(): JsonResponse
     {
+        if ($this->id === null) {
+            return JsonResponse::ok([
+                'orders' => Order::where('user_id', '=', $this->request->user['id'])->get(),
+            ]);
+        }
+
         $order = Order::find($this->id);
 
         if (!$order instanceof Order) {

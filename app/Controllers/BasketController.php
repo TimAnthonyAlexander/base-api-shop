@@ -30,12 +30,12 @@ class BasketController extends Controller
             $basket->save();
         }
 
-        if ($basket->stripe_checkout === null || $basket->stripe_checkout === '') {
+        $basketItems = BasketItem::where('basket_id', '=', $basket->id)->get();
+
+        if ($basketItems !== [] && ($basket->stripe_checkout === null || $basket->stripe_checkout === '')) {
             $basket->stripe_checkout = $basket->createStripeCheckout();
             $basket->save();
         }
-
-        $basketItems = BasketItem::where('basket_id', '=', $basket->id)->get();
 
         return JsonResponse::ok([
             'basket' => $basket,

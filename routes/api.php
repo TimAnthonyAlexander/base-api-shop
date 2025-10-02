@@ -2,6 +2,8 @@
 
 use App\Controllers\BasketController;
 use BaseApi\App;
+use App\Controllers\CheckoutCancelController;
+use App\Controllers\CheckoutSuccessController;
 use App\Controllers\HealthController;
 use App\Controllers\LoginController;
 use App\Controllers\LogoutController;
@@ -11,8 +13,8 @@ use App\Controllers\FileUploadController;
 use App\Controllers\OpenApiController;
 use App\Controllers\OrderController;
 use App\Controllers\ProductController;
+use BaseApi\Http\Middleware\AuthMiddleware;
 use BaseApi\Http\Middleware\RateLimitMiddleware;
-use App\Middleware\CombinedAuthMiddleware;
 
 $router = App::router();
 
@@ -20,7 +22,7 @@ $router = App::router();
 $router->get(
     '/product/{id}',
     [
-        CombinedAuthMiddleware::class,
+        AuthMiddleware::class,
         ProductController::class,
     ],
 );
@@ -28,7 +30,7 @@ $router->get(
 $router->post(
     '/product',
     [
-        CombinedAuthMiddleware::class,
+        AuthMiddleware::class,
         ProductController::class,
     ],
 );
@@ -36,7 +38,7 @@ $router->post(
 $router->get(
     '/basket',
     [
-        CombinedAuthMiddleware::class,
+        AuthMiddleware::class,
         BasketController::class,
     ],
 );
@@ -44,15 +46,23 @@ $router->get(
 $router->post(
     '/basket',
     [
-        CombinedAuthMiddleware::class,
+        AuthMiddleware::class,
         BasketController::class,
+    ],
+);
+
+$router->get(
+    '/orders',
+    [
+        AuthMiddleware::class,
+        OrderController::class,
     ],
 );
 
 $router->get(
     '/order/{id}',
     [
-        CombinedAuthMiddleware::class,
+        AuthMiddleware::class,
         OrderController::class,
     ],
 );
@@ -60,8 +70,22 @@ $router->get(
 $router->post(
     '/order',
     [
-        CombinedAuthMiddleware::class,
+        AuthMiddleware::class,
         OrderController::class,
+    ],
+);
+
+$router->get(
+    '/checkout/success',
+    [
+        CheckoutSuccessController::class,
+    ],
+);
+
+$router->get(
+    '/checkout/cancel',
+    [
+        CheckoutCancelController::class,
     ],
 );
 
@@ -93,17 +117,17 @@ $router->post('/auth/login', [
 
 // User logout (supports both session and API token auth)
 $router->post('/auth/logout', [
-    CombinedAuthMiddleware::class,
+    AuthMiddleware::class,
     LogoutController::class,
 ]);
 
 // ================================
-// Protected Endpoints (Combined Auth)
+// Protected Endpoints ( Auth)
 // ================================
 
 // Get current user info (supports both session and API token)
 $router->get('/me', [
-    CombinedAuthMiddleware::class,
+    AuthMiddleware::class,
     MeController::class,
 ]);
 
@@ -113,20 +137,20 @@ $router->get('/me', [
 
 // Basic file upload
 $router->post('/files/upload', [
-    CombinedAuthMiddleware::class,
+    AuthMiddleware::class,
     RateLimitMiddleware::class => ['limit' => '10/1m'],
     FileUploadController::class,
 ]);
 
 // Get file info
 $router->get('/files/info', [
-    CombinedAuthMiddleware::class,
+    AuthMiddleware::class,
     FileUploadController::class,
 ]);
 
 // Delete files
 $router->delete('/files', [
-    CombinedAuthMiddleware::class,
+    AuthMiddleware::class,
     FileUploadController::class,
 ]);
 
