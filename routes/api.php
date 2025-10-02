@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\BasketController;
 use BaseApi\App;
 use App\Controllers\HealthController;
 use App\Controllers\LoginController;
@@ -28,6 +29,22 @@ $router->post(
     [
         CombinedAuthMiddleware::class,
         ProductController::class,
+    ],
+);
+
+$router->get(
+    '/basket',
+    [
+        CombinedAuthMiddleware::class,
+        BasketController::class,
+    ],
+);
+
+$router->post(
+    '/basket',
+    [
+        CombinedAuthMiddleware::class,
+        BasketController::class,
     ],
 );
 

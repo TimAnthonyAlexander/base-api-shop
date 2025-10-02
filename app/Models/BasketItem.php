@@ -14,6 +14,8 @@ class BasketItem extends BaseModel
 
     public string $product_id;
 
+    public int $quantity = 1;
+
     public function basket(): BelongsTo
     {
         return $this->belongsTo(Basket::class);
@@ -24,4 +26,3 @@ class BasketItem extends BaseModel
         return $this->belongsTo(Product::class);
     }
 }
-

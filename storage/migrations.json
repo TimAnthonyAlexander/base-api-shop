@@ -162,6 +162,15 @@
             "table": "jobs",
             "operation": "create_table",
             "description": "Create jobs table and indexes for queue system"
+        },
+        {
+            "id": "mig_a9ea42066e77",
+            "sql": "ALTER TABLE `basket_item` ADD COLUMN `quantity` INT NOT NULL DEFAULT '1'",
+            "destructive": false,
+            "generated_at": "2025-10-02T19:28:07+00:00",
+            "table": "basket_item",
+            "operation": "add_column",
+            "warning": null
         }
     ]
 }
