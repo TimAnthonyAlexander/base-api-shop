@@ -131,6 +131,11 @@ $router->get('/me', [
     MeController::class,
 ]);
 
+$router->post('/me', [
+    AuthMiddleware::class,
+    MeController::class,
+]);
+
 // ================================
 // File Upload Examples
 // ================================
