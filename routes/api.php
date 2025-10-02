@@ -8,10 +8,28 @@ use App\Controllers\MeController;
 use App\Controllers\SignupController;
 use App\Controllers\FileUploadController;
 use App\Controllers\OpenApiController;
+use App\Controllers\ProductController;
 use BaseApi\Http\Middleware\RateLimitMiddleware;
 use App\Middleware\CombinedAuthMiddleware;
 
 $router = App::router();
+
+
+$router->get(
+    '/product/{id}',
+    [
+        CombinedAuthMiddleware::class,
+        ProductController::class,
+    ],
+);
+
+$router->post(
+    '/product',
+    [
+        CombinedAuthMiddleware::class,
+        ProductController::class,
+    ],
+);
 
 // ================================
 // Public Endpoints (No Auth)
