@@ -219,6 +219,86 @@
                 }
             }
         },
+        "/order/{id}": {
+            "get": {
+                "summary": "GET OrderController",
+                "operationId": "getOrderById",
+                "tags": [
+                    "API"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/order": {
+            "post": {
+                "summary": "POST OrderController",
+                "operationId": "postOrder",
+                "tags": [
+                    "API"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "summary": "GET HealthController",

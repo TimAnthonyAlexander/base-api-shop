@@ -59,6 +59,18 @@ export interface PostBasketRequestBody {
 
 export type PostBasketResponse = Envelope<any>;
 
+export interface GetOrderByIdRequestPath {
+  id: string;
+}
+
+export type GetOrderByIdResponse = Envelope<any>;
+
+export interface PostOrderRequestBody {
+  id?: string;
+}
+
+export type PostOrderResponse = Envelope<any>;
+
 export interface GetHealthRequestQuery {
   db?: string;
   cache?: string;

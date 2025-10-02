@@ -9,6 +9,7 @@ use App\Controllers\MeController;
 use App\Controllers\SignupController;
 use App\Controllers\FileUploadController;
 use App\Controllers\OpenApiController;
+use App\Controllers\OrderController;
 use App\Controllers\ProductController;
 use BaseApi\Http\Middleware\RateLimitMiddleware;
 use App\Middleware\CombinedAuthMiddleware;
@@ -45,6 +46,22 @@ $router->post(
     [
         CombinedAuthMiddleware::class,
         BasketController::class,
+    ],
+);
+
+$router->get(
+    '/order/{id}',
+    [
+        CombinedAuthMiddleware::class,
+        OrderController::class,
+    ],
+);
+
+$router->post(
+    '/order',
+    [
+        CombinedAuthMiddleware::class,
+        OrderController::class,
     ],
 );
 

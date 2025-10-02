@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use BaseApi\Database\Relations\BelongsTo;
+use BaseApi\Database\Relations\HasMany;
 use BaseApi\Models\BaseModel;
 
 /**
@@ -15,5 +16,10 @@ class Basket extends BaseModel
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(BasketItem::class);
     }
 }
