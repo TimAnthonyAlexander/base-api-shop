@@ -15,19 +15,24 @@ class User extends BaseModel
 
     public bool $active = true;
 
+    public string $address = '';
+
+    public string $role = 'user';
+
     /**
      * Define indexes for this model
      * @var array<string, string>
      */
     public static array $indexes = [
         'email' => 'unique',
+        'role' => 'index',
     ];
 
     public function checkPassword(string $password): bool
     {
         return password_verify($password, $this->password);
     }
-    
+
     public function apiTokens(): HasMany
     {
         return $this->hasMany(ApiToken::class);

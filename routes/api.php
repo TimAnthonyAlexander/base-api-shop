@@ -7,9 +7,7 @@ use App\Controllers\LogoutController;
 use App\Controllers\MeController;
 use App\Controllers\SignupController;
 use App\Controllers\FileUploadController;
-use App\Controllers\BenchmarkController;
 use App\Controllers\OpenApiController;
-use App\Controllers\ApiTokenController;
 use BaseApi\Http\Middleware\RateLimitMiddleware;
 use App\Middleware\CombinedAuthMiddleware;
 
@@ -24,9 +22,6 @@ $router->get('/health', [
     RateLimitMiddleware::class => ['limit' => '60/1m'],
     HealthController::class,
 ]);
-
-// Benchmark endpoint (no middleware for performance testing)
-$router->get('/benchmark', [BenchmarkController::class]);
 
 // ================================  
 // Authentication Endpoints
@@ -60,23 +55,6 @@ $router->get('/me', [
     MeController::class,
 ]);
 
-// API token management (supports both session and API token)
-$router->get('/api-tokens', [
-    CombinedAuthMiddleware::class,
-    ApiTokenController::class,
-]);
-
-$router->post('/api-tokens', [
-    CombinedAuthMiddleware::class,
-    RateLimitMiddleware::class => ['limit' => '10/1h'],
-    ApiTokenController::class,
-]);
-
-$router->delete('/api-tokens/{id}', [
-    CombinedAuthMiddleware::class,
-    ApiTokenController::class,
-]);
-
 // ================================
 // File Upload Examples
 // ================================
@@ -108,4 +86,3 @@ if (App::config('app.env') === 'local') {
     // OpenAPI schema for API documentation
     $router->get('/openapi.json', [OpenApiController::class]);
 }
-
