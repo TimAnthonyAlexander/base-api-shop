@@ -1,4 +1,4 @@
-// Generated TypeScript definitions for BaseApi
+// Generated TypeScript definitions for Shop
 // Do not edit manually - regenerate with: ./mason types:generate
 
 export type UUID = string;
@@ -11,91 +11,91 @@ export interface ErrorResponse {
 }
 
 export interface User {
-  name: string;
-  password: string;
-  email: string;
-  active: boolean;
-  address: string;
-  role: string;
-  id: string;
-  created_at?: string;
-  updated_at?: string;
+  name?: string;
+  password?: string;
+  email?: string;
+  active?: boolean;
+  address?: string;
+  role?: string;
+  id?: string;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
-export interface GetProductByIdRequestPath {
+export interface GetProductByIdPathParams {
   id: string;
 }
 
-export interface GetProductByIdRequestQuery {
+export interface GetProductByIdQueryParams {
   title?: string;
-  description?: string;
+  description?: string | null;
   price: number;
   stock: number;
 }
 
-export type GetProductByIdResponse = Envelope<any>;
+export type GetProductByIdResponse = Envelope<unknown>;
 
 export interface PostProductRequestBody {
   id?: string;
   title?: string;
-  description?: string;
-  price?: number;
-  stock?: number;
+  description?: string | null;
+  price: number;
+  stock: number;
 }
 
-export type PostProductResponse = Envelope<any>;
+export type PostProductResponse = Envelope<unknown>;
 
-export interface GetBasketRequestQuery {
+export interface GetBasketQueryParams {
   product_id: string;
   action?: string;
 }
 
-export type GetBasketResponse = Envelope<any>;
+export type GetBasketResponse = Envelope<unknown>;
 
 export interface PostBasketRequestBody {
-  product_id?: string;
+  product_id: string;
   action?: string;
 }
 
-export type PostBasketResponse = Envelope<any>;
+export type PostBasketResponse = Envelope<unknown>;
 
-export interface GetOrderRequestQuery {
-  id?: string;
+export interface GetOrderQueryParams {
+  id?: string | null;
 }
 
-export type GetOrderResponse = Envelope<any>;
+export type GetOrderResponse = Envelope<unknown>;
 
-export interface GetOrderByIdRequestPath {
-  id: string;
+export interface GetOrderByIdPathParams {
+  id: string | null;
 }
 
-export type GetOrderByIdResponse = Envelope<any>;
+export type GetOrderByIdResponse = Envelope<unknown>;
 
 export interface PostOrderRequestBody {
-  id?: string;
+  id?: string | null;
 }
 
-export type PostOrderResponse = Envelope<any>;
+export type PostOrderResponse = Envelope<unknown>;
 
-export interface GetCheckoutSuccessRequestQuery {
+export interface GetCheckoutSuccessQueryParams {
   session_id: string;
   basket_id: string;
 }
 
-export type GetCheckoutSuccessResponse = Envelope<any>;
+export type GetCheckoutSuccessResponse = Envelope<unknown>;
 
-export interface GetCheckoutCancelRequestQuery {
+export interface GetCheckoutCancelQueryParams {
   basket_id: string;
 }
 
-export type GetCheckoutCancelResponse = Envelope<any>;
+export type GetCheckoutCancelResponse = Envelope<unknown>;
 
-export interface GetHealthRequestQuery {
+export interface GetHealthQueryParams {
   db?: string;
   cache?: string;
 }
 
-export type GetHealthResponse = Envelope<any>;
+export type GetHealthResponse = Envelope<unknown>;
 
 export interface PostSignupRequestBody {
   name?: string;
@@ -103,23 +103,23 @@ export interface PostSignupRequestBody {
   password?: string;
 }
 
-export type PostSignupResponse = Envelope<any>;
+export type PostSignupResponse = Envelope<User>;
 
 export interface PostLoginRequestBody {
   email?: string;
   password?: string;
 }
 
-export type PostLoginResponse = Envelope<any>;
+export type PostLoginResponse = Envelope<{ user: string[] }>;
 
-export type PostLogoutResponse = Envelope<any>;
+export type PostLogoutResponse = Envelope<{ message: string }>;
 
-export type GetMeResponse = Envelope<any>;
+export type GetMeResponse = Envelope<{ user: string[] }>;
 
-export type PostFileUploadResponse = Envelope<any>;
+export type PostFileUploadResponse = Envelope<{ path: string; url: string; size: number; type: string }>;
 
-export type GetFileUploadResponse = Envelope<any>;
+export type GetFileUploadResponse = Envelope<unknown>;
 
-export type DeleteFileUploadResponse = Envelope<any>;
+export type DeleteFileUploadResponse = Envelope<unknown>;
 
-export type GetOpenApiResponse = Envelope<any>;
+export type GetOpenApiResponse = Envelope<unknown>;
