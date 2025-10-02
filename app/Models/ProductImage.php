@@ -6,18 +6,13 @@ use BaseApi\Database\Relations\BelongsTo;
 use BaseApi\Models\BaseModel;
 
 /**
- * BasketItem Model
+ * ProductImage Model
  */
-class BasketItem extends BaseModel
+class ProductImage extends BaseModel
 {
-    public string $basket_id;
-
     public string $product_id;
 
-    public function basket(): BelongsTo
-    {
-        return $this->belongsTo(Basket::class);
-    }
+    public string $image_path;
 
     public function product(): BelongsTo
     {
