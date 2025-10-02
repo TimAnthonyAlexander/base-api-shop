@@ -252,6 +252,15 @@
             "table": "order_item",
             "operation": "add_fk",
             "warning": null
+        },
+        {
+            "id": "mig_d02b6d97be06",
+            "sql": "ALTER TABLE `basket` ADD COLUMN `stripe_checkout` VARCHAR(255)",
+            "destructive": false,
+            "generated_at": "2025-10-02T21:54:45+00:00",
+            "table": "basket",
+            "operation": "add_column",
+            "warning": null
         }
     ]
 }

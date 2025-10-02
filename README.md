@@ -1,116 +1,170 @@
-# BaseAPI Project
+# Stripe Integration
 
-This is the "empty" template project using baseapi.
-Creating a new project with baseapi will use this as a starter template.
+This shop project includes a simple Stripe payment integration using the official Stripe PHP SDK.
 
-## Quick Start
+## Setup
 
-Create a new baseapi project "my-api" using Composer:
+### 1. Install Dependencies
 
-```bash
-composer create-project baseapi/baseapi-template my-api
-cd my-api
-```
-
-Copy the environment example file and start the server
+The Stripe SDK is already installed via Composer:
 
 ```bash
-cp .env.example .env
-php mason serve
+composer require stripe/stripe-php
 ```
 
-Your API will be available at `http://localhost:7879`.
-You can change host and port in the .env file.
+### 2. Configure Environment Variables
 
-### Console commands are run using:
+Add your Stripe API keys to your `.env` file:
 
 ```bash
-php mason
+# Stripe Payment Configuration
+STRIPE_SECRET_KEY=sk_test_your_secret_key_here
+STRIPE_CURRENCY=eur
+
+# Optional: Enable shipping address collection
+STRIPE_SHIPPING_ENABLED=false
+STRIPE_SHIPPING_COUNTRIES=DE,AT,CH
 ```
 
-## Git Hooks
+**Get your API keys from:** https://dashboard.stripe.com/apikeys
 
-This template includes pre-commit hooks that automatically check code quality:
+⚠️ **Important:** Never commit your `.env` file to version control!
 
-- **PHP Syntax Check** - Validates all staged PHP files
-- **PHPStan Analysis** - Static code analysis (if available)
-- **Tests** - Runs PHPUnit tests when core files change
-- **Code Quality** - Prevents debugging functions in commits
-- **File Size Warnings** - Alerts for large files
+## Usage
 
-### Setup
+### Creating a Checkout Session
 
-Hooks are automatically installed when creating a new project. To reinstall manually:
-
-```bash
-composer setup-hooks
-```
-
-### Bypass Hook (Not Recommended)
-
-```bash
-git commit --no-verify -m "Skip pre-commit checks"
-```
-
-See `.githooks/README.md` for detailed documentation.
-
-## Dependency Injection Example
-
-This template demonstrates BaseAPI's dependency injection system:
-
-### EmailService Example
-
-The `SignupController` shows how to inject services:
+The `Basket` model has a convenient method to create a Stripe checkout session:
 
 ```php
-class SignupController extends Controller
+$basket = Basket::find($basketId);
+$checkoutUrl = $basket->createStripeCheckout();
+
+// Redirect user to $checkoutUrl
+```
+
+### Using the CheckoutController
+
+A `CheckoutController` is provided to handle the checkout flow:
+
+```php
+POST /checkout
+```
+
+This endpoint:
+1. Gets the authenticated user's basket
+2. Creates a Stripe checkout session
+3. Returns the checkout URL
+
+**Response:**
+```json
 {
-    private EmailService $emailService;
+  "checkout_url": "https://checkout.stripe.com/c/pay/...",
+  "message": "Checkout session created successfully"
+}
+```
 
-    public function __construct(EmailService $emailService)
-    {
-        $this->emailService = $emailService;
-    }
+### Handling Success/Cancel Redirects
 
+After payment, Stripe redirects to:
+- **Success:** `{APP_URL}/checkout/success?session_id={SESSION_ID}&basket_id={BASKET_ID}`
+- **Cancel:** `{APP_URL}/checkout/cancel?basket_id={BASKET_ID}`
+
+Implement these routes to handle post-payment logic (create orders, clear baskets, etc.).
+
+## Architecture
+
+### StripeService (`app/Services/StripeService.php`)
+
+A simple service class that wraps the Stripe SDK:
+
+- `createCheckoutSession(Basket $basket, ?string $customerEmail = null): Session`
+- `getSession(string $sessionId): Session`
+- `createProduct(string $name, string $description, float $price): Product`
+- `deleteProduct(string $productId): void`
+
+**Features:**
+- Reads configuration from environment variables (KISS principle)
+- Automatically builds line items from basket
+- Includes metadata (basket_id, user_id) for webhook processing
+- Optional shipping address collection
+
+### Basket Model Integration
+
+The `Basket` model includes a convenient method:
+
+```php
+public function createStripeCheckout(): string
+```
+
+This method:
+1. Gets the user's email
+2. Creates a Stripe checkout session with basket items
+3. Returns the checkout URL
+
+### Example Route Configuration
+
+Add to `routes/api.php`:
+
+```php
+use App\Controllers\CheckoutController;
+use App\Middleware\CombinedAuthMiddleware;
+
+$router->post('/checkout', CheckoutController::class, [CombinedAuthMiddleware::class]);
+$router->get('/checkout/success', CheckoutController::class);
+$router->get('/checkout/cancel', CheckoutController::class);
+```
+
+## Webhooks (Optional)
+
+To handle Stripe webhooks for payment confirmation, you can create a webhook endpoint:
+
+```php
+class StripeWebhookController extends Controller
+{
     public function post(): JsonResponse
     {
-        // ... user creation logic ...
+        $payload = $this->request->body;
+        $signature = $this->request->headers['Stripe-Signature'] ?? '';
         
-        // Use injected service
-        $this->emailService->sendWelcome($user->email, $user->name);
+        // Verify webhook signature
+        // Process events (checkout.session.completed, etc.)
         
-        return JsonResponse::ok($user->jsonSerialize());
+        return JsonResponse::ok(['received' => true]);
     }
 }
 ```
 
-### Service Provider
+## Currency Configuration
 
-Services are registered in `app/Providers/AppServiceProvider.php`:
+The default currency is EUR. To change it, update `STRIPE_CURRENCY` in your `.env`:
 
-```php
-public function register(ContainerInterface $container): void
-{
-    $container->singleton(EmailService::class);
-    $container->singleton(UserProvider::class, SimpleUserProvider::class);
-}
+```bash
+STRIPE_CURRENCY=usd  # or eur, gbp, chf, etc.
 ```
 
-### Configuration
+## Testing
 
-Providers are registered in `config/app.php`:
+Use Stripe's test mode API keys (starting with `sk_test_`) for development. Test card numbers:
 
-```php
-'providers' => [
-    \App\Providers\AppServiceProvider::class,
-],
-```
+- **Success:** `4242 4242 4242 4242`
+- **Decline:** `4000 0000 0000 0002`
+- **3D Secure:** `4000 0027 6000 3184`
 
-## Documentation
+More test cards: https://stripe.com/docs/testing
 
-For full framework documentation, features, and usage examples, see:
-- **[BaseAPI Repository](https://github.com/timanthonyalexander/base-api)** - Complete documentation
+## Production Checklist
 
----
+- [ ] Replace test API keys with live keys (`sk_live_...`)
+- [ ] Set `APP_ENV=production`
+- [ ] Enable HTTPS for your domain
+- [ ] Set up Stripe webhooks for payment confirmation
+- [ ] Implement proper error handling and logging
+- [ ] Test the complete checkout flow
 
-**BaseAPI** - The tiny, KISS-first PHP 8.4 framework that gets out of your way.
+## Additional Resources
+
+- [Stripe PHP SDK Documentation](https://stripe.com/docs/api/php)
+- [Stripe Checkout Documentation](https://stripe.com/docs/payments/checkout)
+- [Stripe Dashboard](https://dashboard.stripe.com/)
+
