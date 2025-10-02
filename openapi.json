@@ -219,6 +219,43 @@
                 }
             }
         },
+        "/orders": {
+            "get": {
+                "summary": "GET OrderController",
+                "operationId": "getOrder",
+                "tags": [
+                    "API"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
         "/order/{id}": {
             "get": {
                 "summary": "GET OrderController",
@@ -295,6 +332,88 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/checkout/success": {
+            "get": {
+                "summary": "GET CheckoutSuccessController",
+                "operationId": "getCheckoutSuccess",
+                "tags": [
+                    "API"
+                ],
+                "parameters": [
+                    {
+                        "name": "session_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "basket_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/checkout/cancel": {
+            "get": {
+                "summary": "GET CheckoutCancelController",
+                "operationId": "getCheckoutCancel",
+                "tags": [
+                    "API"
+                ],
+                "parameters": [
+                    {
+                        "name": "basket_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
                     }
                 }
             }

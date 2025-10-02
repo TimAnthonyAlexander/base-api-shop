@@ -59,6 +59,12 @@ export interface PostBasketRequestBody {
 
 export type PostBasketResponse = Envelope<any>;
 
+export interface GetOrderRequestQuery {
+  id?: string;
+}
+
+export type GetOrderResponse = Envelope<any>;
+
 export interface GetOrderByIdRequestPath {
   id: string;
 }
@@ -70,6 +76,19 @@ export interface PostOrderRequestBody {
 }
 
 export type PostOrderResponse = Envelope<any>;
+
+export interface GetCheckoutSuccessRequestQuery {
+  session_id: string;
+  basket_id: string;
+}
+
+export type GetCheckoutSuccessResponse = Envelope<any>;
+
+export interface GetCheckoutCancelRequestQuery {
+  basket_id: string;
+}
+
+export type GetCheckoutCancelResponse = Envelope<any>;
 
 export interface GetHealthRequestQuery {
   db?: string;
