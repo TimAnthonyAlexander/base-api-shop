@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\ProductImage;
 use App\Models\Product;
+use BaseApi\Cache\Cache;
 use BaseApi\Controllers\Controller;
 use BaseApi\Http\JsonResponse;
 
@@ -18,6 +19,10 @@ class ProductRecommendationsController extends Controller
 
     public function get(): JsonResponse
     {
+        if (Cache::has('product_recommendations')) {
+            return JsonResponse::ok(Cache::get('product_recommendations'));
+        }
+
         $allProducts = Product::cached()->where('stock', '>=', 1)->orderBy('views', 'desc')->limit($this->limit)->get();
 
         $productsWithImages = [];
@@ -44,6 +49,11 @@ class ProductRecommendationsController extends Controller
                 ];
             }
         }
+
+        Cache::put('product_recommendations', [
+            'products' => $productsWithImages,
+            'limit' => $this->limit,
+        ], 3600);
 
         return JsonResponse::ok([
             'products' => $productsWithImages,
