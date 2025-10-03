@@ -378,6 +378,15 @@
             "table": "product_attribute",
             "operation": "add_fk",
             "warning": null
+        },
+        {
+            "id": "mig_c862755647e0",
+            "sql": "ALTER TABLE `product` ADD COLUMN `longDescription` LONGTEXT",
+            "destructive": false,
+            "generated_at": "2025-10-03T15:32:15+00:00",
+            "table": "product",
+            "operation": "add_column",
+            "warning": null
         }
     ]
 }

@@ -14,6 +14,8 @@ class Product extends BaseModel
 
     public ?string $description = null;
 
+    public ?string $longDescription = null;
+
     public float $price = 0.0;
 
     public int $stock = 0;
@@ -29,10 +31,16 @@ class Product extends BaseModel
 
     public static array $columns = [
         'description' => ['type' => 'TEXT', 'nullable' => true],
+        'longDescription' => ['type' => 'LONGTEXT', 'nullable' => true],
     ];
 
     public function images(): HasMany
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function attributes(): HasMany
+    {
+        return $this->hasMany(ProductAttribute::class);
     }
 }

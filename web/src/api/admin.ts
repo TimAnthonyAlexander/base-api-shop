@@ -44,6 +44,12 @@ export interface ProductImage {
   path: string;
 }
 
+export interface ProductAttribute {
+  id: string;
+  attribute: string;
+  value: string;
+}
+
 export interface Product {
   id: string;
   title: string;
@@ -52,6 +58,7 @@ export interface Product {
   stock: number;
   views: number;
   images: ProductImage[];
+  attributes: ProductAttribute[];
   created_at: string;
   updated_at: string;
 }
@@ -285,4 +292,55 @@ export interface AnalyticsResponse {
 
 export async function getAdminAnalytics(options?: HttpOptions): Promise<AnalyticsResponse> {
   return http.get<AnalyticsResponse>('/admin/analytics', options);
+}
+
+// ============================================
+// Product Attribute Management
+// ============================================
+
+export interface AddAttributeBody {
+  attribute: string;
+  value: string;
+}
+
+export interface UpdateAttributeBody {
+  attribute?: string;
+  value?: string;
+}
+
+export interface AttributeResponse {
+  success: boolean;
+  data: {
+    attribute: ProductAttribute;
+  };
+}
+
+export interface DeleteAttributeResponse {
+  success: boolean;
+  data: {
+    message: string;
+  };
+}
+
+export async function addProductAttribute(
+  productId: string,
+  body: AddAttributeBody,
+  options?: HttpOptions
+): Promise<AttributeResponse> {
+  return http.post<AttributeResponse>(`/admin/product/${productId}/attribute`, body, options);
+}
+
+export async function updateProductAttribute(
+  attributeId: string,
+  body: UpdateAttributeBody,
+  options?: HttpOptions
+): Promise<AttributeResponse> {
+  return http.put<AttributeResponse>(`/admin/product/attribute/${attributeId}`, body, options);
+}
+
+export async function deleteProductAttribute(
+  attributeId: string,
+  options?: HttpOptions
+): Promise<DeleteAttributeResponse> {
+  return http.delete<DeleteAttributeResponse>(`/admin/product/attribute/${attributeId}`, options);
 }

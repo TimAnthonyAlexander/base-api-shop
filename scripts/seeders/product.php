@@ -8,6 +8,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductAttribute;
 use BaseApi\App;
 use Faker\Factory as FakerFactory;
 
@@ -109,6 +110,32 @@ for ($i = 0; $i < $count; $i++) {
             $productImage->image_path = 'storage/products/' . $imageFilename;
             $productImage->save();
         }
+    }
+
+    // Create product attributes
+    $attributeTypes = [
+        'Color' => ['Black', 'White', 'Silver', 'Gold', 'Blue', 'Red', 'Green', 'Gray', 'Rose Gold', 'Navy', 'Beige', 'Brown'],
+        'Material' => ['Aluminum', 'Steel', 'Plastic', 'Leather', 'Cotton', 'Polyester', 'Silicone', 'Glass', 'Wood', 'Ceramic', 'Carbon Fiber'],
+        'Size' => ['Small', 'Medium', 'Large', 'X-Large', 'Compact', 'Standard', 'Premium'],
+        'Weight' => ['Lightweight', 'Standard', 'Heavy-duty', '100g', '200g', '500g', '1kg', '2kg'],
+        'Warranty' => ['1 Year', '2 Years', '3 Years', '5 Years', 'Lifetime', '90 Days'],
+        'Brand' => ['TechPro', 'Premium', 'Elite', 'Classic', 'Modern', 'Essential', 'Deluxe'],
+        'Origin' => ['USA', 'Germany', 'Japan', 'Italy', 'France', 'UK', 'Switzerland', 'Sweden'],
+        'Dimensions' => ['10x5x2cm', '15x10x5cm', '20x15x10cm', '25x20x15cm', '30x25x20cm'],
+    ];
+
+    // Add 2-5 random attributes per product
+    $numAttributes = $faker->numberBetween(2, 5);
+    $selectedAttributeTypes = $faker->randomElements(array_keys($attributeTypes), $numAttributes);
+    
+    foreach ($selectedAttributeTypes as $attributeType) {
+        $attributeValue = $faker->randomElement($attributeTypes[$attributeType]);
+        
+        $productAttribute = new ProductAttribute();
+        $productAttribute->product_id = $p->id;
+        $productAttribute->attribute = $attributeType;
+        $productAttribute->value = $attributeValue;
+        $productAttribute->save();
     }
 
     if (($i + 1) % 10 === 0) echo ($i + 1) . PHP_EOL;

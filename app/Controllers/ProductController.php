@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\ProductImage;
+use App\Models\ProductAttribute;
 use App\Models\Product;
 use BaseApi\Controllers\Controller;
 use BaseApi\Http\JsonResponse;
@@ -46,6 +47,19 @@ class ProductController extends Controller
                 }
             }
 
+            // Get product attributes
+            $attributes = $product->attributes()->get();
+            $attributesData = [];
+            foreach ($attributes as $attribute) {
+                if ($attribute instanceof ProductAttribute) {
+                    $attributesData[] = [
+                        'id' => $attribute->id,
+                        'attribute' => $attribute->attribute,
+                        'value' => $attribute->value,
+                    ];
+                }
+            }
+
             $productData = [
                 'id' => $product->id,
                 'title' => $product->title,
@@ -54,6 +68,7 @@ class ProductController extends Controller
                 'stock' => $product->stock,
                 'views' => $product->views,
                 'images' => $imageUrls,
+                'attributes' => $attributesData,
                 'created_at' => $product->created_at,
                 'updated_at' => $product->updated_at,
             ];
@@ -77,6 +92,19 @@ class ProductController extends Controller
                     }
                 }
 
+                // Get product attributes
+                $attributes = $product->attributes()->get();
+                $attributesData = [];
+                foreach ($attributes as $attribute) {
+                    if ($attribute instanceof ProductAttribute) {
+                        $attributesData[] = [
+                            'id' => $attribute->id,
+                            'attribute' => $attribute->attribute,
+                            'value' => $attribute->value,
+                        ];
+                    }
+                }
+
                 $productsWithImages[] = [
                     'id' => $product->id,
                     'title' => $product->title,
@@ -85,6 +113,7 @@ class ProductController extends Controller
                     'stock' => $product->stock,
                     'views' => $product->views,
                     'images' => $imageUrls,
+                    'attributes' => $attributesData,
                     'created_at' => $product->created_at,
                     'updated_at' => $product->updated_at,
                 ];

@@ -2,6 +2,7 @@
 
 use App\Controllers\AdminThemeController;
 use App\Controllers\AdminProductController;
+use App\Controllers\AdminProductAttributeController;
 use App\Controllers\AdminOrderController;
 use App\Controllers\BasketController;
 use BaseApi\App;
@@ -256,6 +257,28 @@ $router->delete('/admin/product/image/{image_id}', [
     AdminMiddleware::class,
     RateLimitMiddleware::class => ['limit' => '30/1m'],
     AdminProductController::class,
+]);
+
+// Product attribute management
+$router->post('/admin/product/{id}/attribute', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '30/1m'],
+    AdminProductAttributeController::class,
+]);
+
+$router->put('/admin/product/attribute/{attribute_id}', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '30/1m'],
+    AdminProductAttributeController::class,
+]);
+
+$router->delete('/admin/product/attribute/{attribute_id}', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '30/1m'],
+    AdminProductAttributeController::class,
 ]);
 
 // Order management
