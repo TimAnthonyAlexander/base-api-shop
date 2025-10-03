@@ -50,7 +50,6 @@ $router->get(
 $router->get(
     '/product/{id}',
     [
-        AuthMiddleware::class,
         ProductController::class,
     ],
 );
