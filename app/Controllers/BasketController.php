@@ -34,15 +34,15 @@ class BasketController extends Controller
 
         // Enrich basket items with product details
         $enrichedItems = [];
-        foreach ($basketItems as $item) {
-            $product = Product::find($item->product_id);
+        foreach ($basketItems as $basketItem) {
+            $product = Product::find($basketItem->product_id);
             $itemData = [
-                'id' => $item->id,
-                'basket_id' => $item->basket_id,
-                'product_id' => $item->product_id,
-                'quantity' => $item->quantity,
-                'created_at' => $item->created_at,
-                'updated_at' => $item->updated_at,
+                'id' => $basketItem->id,
+                'basket_id' => $basketItem->basket_id,
+                'product_id' => $basketItem->product_id,
+                'quantity' => $basketItem->quantity,
+                'created_at' => $basketItem->created_at,
+                'updated_at' => $basketItem->updated_at,
                 'product' => $product instanceof Product ? [
                     'id' => $product->id,
                     'title' => $product->title,

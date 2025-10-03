@@ -48,7 +48,7 @@ export default function MePage() {
 
   useEffect(() => {
     if (userData?.data) {
-      const user = (userData.data as any).user?.[0] || (userData.data as any);
+      const user = (userData.data as any).user || (userData.data as any);
       setName(user.name || '');
       setEmail(user.email || '');
       setAddress(user.address || '');
@@ -76,7 +76,7 @@ export default function MePage() {
     );
   }
 
-  const user = (userData?.data as any)?.user?.[0] || (userData?.data as any);
+  const user = (userData?.data as any)?.user || (userData?.data as any);
 
   const handleSave = () => {
     updateProfile({
