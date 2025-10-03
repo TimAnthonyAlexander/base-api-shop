@@ -22,7 +22,6 @@ import {
     List,
     ListItem,
     ListItemText,
-    ListItemButton,
     Tabs,
     Tab,
 } from '@mui/material';
@@ -136,6 +135,50 @@ export default function VariantManagementDialog({
         }
     };
 
+    const handleSearch = async () => {
+        if (!searchQuery.trim()) {
+            setSearchResults([]);
+            return;
+        }
+
+        setSearching(true);
+        setError('');
+        try {
+            const response = await getProductSearch({ query: searchQuery });
+            const products = (response.data as any)?.products || [];
+            // Filter out products that are already in this variant group
+            const variantIds = variants.map((v) => v.id);
+            const filtered = products.filter((p: any) => !variantIds.includes(p.id) && p.id !== product.id);
+            setSearchResults(filtered);
+        } catch (e) {
+            setError('Search failed');
+            console.error(e);
+        } finally {
+            setSearching(false);
+        }
+    };
+
+    const handleAddExistingProduct = async (productId: string) => {
+        setAddingProduct(true);
+        setError('');
+        try {
+            // Group this product with the current variant group
+            const productIds = [product.id, productId];
+            await groupProducts({ product_ids: productIds });
+            setSuccess('Product added to variant group!');
+            setSearchQuery('');
+            setSearchResults([]);
+            await loadVariants();
+            onSuccess();
+            setTimeout(() => setSuccess(''), 3000);
+        } catch (e) {
+            setError('Failed to add product to variant group');
+            console.error(e);
+        } finally {
+            setAddingProduct(false);
+        }
+    };
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -175,68 +218,153 @@ export default function VariantManagementDialog({
                     </Box>
                 ) : (
                     <>
-                        {variants.length > 0 && (
-                            <Box sx={{ mb: 3 }}>
-                                <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                                    Current Variants ({variants.length})
+                        <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} sx={{ mb: 2 }}>
+                            <Tab label="Current Variants" />
+                            <Tab label="Add Existing Product" />
+                            <Tab label="Create New Variant" />
+                        </Tabs>
+
+                        {/* Current Variants Tab */}
+                        {activeTab === 0 && (
+                            <>
+                                {variants.length > 0 ? (
+                                    <Box>
+                                        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                                            Variants in this Group ({variants.length})
+                                        </Typography>
+                                        <Table size="small">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Title</TableCell>
+                                                    <TableCell>Price</TableCell>
+                                                    <TableCell>Stock</TableCell>
+                                                    <TableCell align="right">Actions</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {variants.map((variant) => (
+                                                    <TableRow key={variant.id}>
+                                                        <TableCell>
+                                                            {variant.title}
+                                                            {variant.id === product.id && (
+                                                                <Chip label="Current" size="small" sx={{ ml: 1 }} />
+                                                            )}
+                                                        </TableCell>
+                                                        <TableCell>${variant.price.toFixed(2)}</TableCell>
+                                                        <TableCell>
+                                                            <Chip
+                                                                label={variant.stock}
+                                                                size="small"
+                                                                color={variant.stock > 0 ? 'success' : 'error'}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell align="right">
+                                                            <IconButton
+                                                                size="small"
+                                                                color="error"
+                                                                onClick={() => handleUngroup(variant.id)}
+                                                            >
+                                                                <Delete fontSize="small" />
+                                                            </IconButton>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </Box>
+                                ) : (
+                                    <Alert severity="info">
+                                        No variants yet. Add an existing product or create a new variant to get started.
+                                    </Alert>
+                                )}
+                            </>
+                        )}
+
+                        {/* Add Existing Product Tab */}
+                        {activeTab === 1 && (
+                            <Box>
+                                <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                                    Search for Products
                                 </Typography>
-                                <Table size="small">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Title</TableCell>
-                                            <TableCell>Price</TableCell>
-                                            <TableCell>Stock</TableCell>
-                                            <TableCell align="right">Actions</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {variants.map((variant) => (
-                                            <TableRow key={variant.id}>
-                                                <TableCell>
-                                                    {variant.title}
-                                                    {variant.id === product.id && (
-                                                        <Chip label="Current" size="small" sx={{ ml: 1 }} />
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>${variant.price.toFixed(2)}</TableCell>
-                                                <TableCell>
-                                                    <Chip
-                                                        label={variant.stock}
-                                                        size="small"
-                                                        color={variant.stock > 0 ? 'success' : 'error'}
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    placeholder="Search by product title..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Search />
+                                            </InputAdornment>
+                                        ),
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <Button size="small" onClick={handleSearch} disabled={searching}>
+                                                    {searching ? <CircularProgress size={20} /> : 'Search'}
+                                                </Button>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    sx={{ mb: 2 }}
+                                />
+
+                                {searchResults.length > 0 ? (
+                                    <Box sx={{ maxHeight: 300, overflow: 'auto', border: 1, borderColor: 'divider', borderRadius: 1 }}>
+                                        <List dense>
+                                            {searchResults.map((result: any) => (
+                                                <ListItem
+                                                    key={result.id}
+                                                    secondaryAction={
+                                                        <Button
+                                                            size="small"
+                                                            variant="outlined"
+                                                            onClick={() => handleAddExistingProduct(result.id)}
+                                                            disabled={addingProduct}
+                                                            startIcon={addingProduct ? <CircularProgress size={16} /> : <Add />}
+                                                        >
+                                                            Add
+                                                        </Button>
+                                                    }
+                                                >
+                                                    <ListItemText
+                                                        primary={result.title}
+                                                        secondary={`$${result.price.toFixed(2)} • Stock: ${result.stock}`}
                                                     />
-                                                </TableCell>
-                                                <TableCell align="right">
-                                                    <IconButton
-                                                        size="small"
-                                                        color="error"
-                                                        onClick={() => handleUngroup(variant.id)}
-                                                    >
-                                                        <Delete fontSize="small" />
-                                                    </IconButton>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </Box>
+                                ) : searchQuery && !searching ? (
+                                    <Alert severity="info">No products found. Try a different search term.</Alert>
+                                ) : null}
                             </Box>
                         )}
 
-                        {!showCreateForm ? (
-                            <Button
-                                variant="outlined"
-                                startIcon={<Add />}
-                                onClick={() => setShowCreateForm(true)}
-                                fullWidth
-                            >
-                                Create New Variant
-                            </Button>
-                        ) : (
-                            <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
-                                <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                                    Create New Variant
-                                </Typography>
-                                <Stack spacing={2}>
+                        {/* Create New Variant Tab */}
+                        {activeTab === 2 && (
+                            <Box>
+                                {!showCreateForm ? (
+                                    <>
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                            Create a new product variant based on the current product. The new variant will share the same variant group.
+                                        </Typography>
+                                        <Button
+                                            variant="contained"
+                                            startIcon={<Add />}
+                                            onClick={() => setShowCreateForm(true)}
+                                            fullWidth
+                                        >
+                                            Start Creating Variant
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
+                                        <Typography variant="subtitle2" sx={{ mb: 2 }}>
+                                            Create New Variant
+                                        </Typography>
+                                        <Stack spacing={2}>
                                     <TextField
                                         label="Title"
                                         value={newVariant.title}
@@ -303,6 +431,8 @@ export default function VariantManagementDialog({
                                         </Button>
                                     </Box>
                                 </Stack>
+                            </Box>
+                                )}
                             </Box>
                         )}
                     </>

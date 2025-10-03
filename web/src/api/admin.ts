@@ -57,6 +57,7 @@ export interface Product {
   price: number;
   stock: number;
   views: number;
+  variant_group?: string | null;
   images: ProductImage[];
   attributes: ProductAttribute[];
   created_at: string;

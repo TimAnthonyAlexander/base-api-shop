@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductAttribute;
 use BaseApi\App;
 use BaseApi\Cache\Cache;
 use BaseApi\Controllers\Controller;
@@ -55,6 +56,19 @@ class ProductSearchController extends Controller
                     }
                 }
 
+                // Get product attributes
+                $attributes = $product->attributes()->get();
+                $attributesData = [];
+                foreach ($attributes as $attribute) {
+                    if ($attribute instanceof ProductAttribute) {
+                        $attributesData[] = [
+                            'id' => $attribute->id,
+                            'attribute' => $attribute->attribute,
+                            'value' => $attribute->value,
+                        ];
+                    }
+                }
+
                 $productsWithImages[] = [
                     'id' => $product->id,
                     'title' => $product->title,
@@ -63,6 +77,7 @@ class ProductSearchController extends Controller
                     'stock' => $product->stock,
                     'views' => $product->views,
                     'images' => $imageUrls,
+                    'attributes' => $attributesData,
                     'created_at' => $product->created_at,
                     'updated_at' => $product->updated_at,
                 ];
