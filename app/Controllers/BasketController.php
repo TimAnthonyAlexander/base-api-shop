@@ -32,14 +32,36 @@ class BasketController extends Controller
 
         $basketItems = BasketItem::where('basket_id', '=', $basket->id)->get();
 
-        if ($basketItems !== [] && ($basket->stripe_checkout === null || $basket->stripe_checkout === '')) {
+        // Enrich basket items with product details
+        $enrichedItems = [];
+        foreach ($basketItems as $item) {
+            $product = Product::find($item->product_id);
+            $itemData = [
+                'id' => $item->id,
+                'basket_id' => $item->basket_id,
+                'product_id' => $item->product_id,
+                'quantity' => $item->quantity,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+                'product' => $product instanceof Product ? [
+                    'id' => $product->id,
+                    'title' => $product->title,
+                    'description' => $product->description,
+                    'price' => $product->price,
+                    'stock' => $product->stock,
+                ] : null,
+            ];
+            $enrichedItems[] = $itemData;
+        }
+
+        if ($enrichedItems !== [] && ($basket->stripe_checkout === null || $basket->stripe_checkout === '')) {
             $basket->stripe_checkout = $basket->createStripeCheckout();
             $basket->save();
         }
 
         return JsonResponse::ok([
             'basket' => $basket,
-            'items' => $basketItems,
+            'items' => $enrichedItems,
         ]);
     }
 

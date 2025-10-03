@@ -59,7 +59,9 @@ export default function BasketPage() {
 
   const calculateTotal = () => {
     return items.reduce((total: number, item: any) => {
-      return total + (item.product?.price || 0) * (item.quantity || 0);
+      const price = Number(item.product?.price || 0);
+      const quantity = Number(item.quantity || 0);
+      return total + (price * quantity);
     }, 0);
   };
 
@@ -110,8 +112,8 @@ export default function BasketPage() {
                 >
                   <Box
                     component="img"
-                    src={item.product?.image || 'https://via.placeholder.com/200'}
-                    alt={item.product?.title}
+                    src={`https://images.unsplash.com/photo-${parseInt(item.product_id.slice(0, 8), 16) % 6 === 0 ? '1505740420928-5e560c06d30e' : parseInt(item.product_id.slice(0, 8), 16) % 6 === 1 ? '1523275335684-37898b6baf30' : parseInt(item.product_id.slice(0, 8), 16) % 6 === 2 ? '1553062407-98eeb64c6a62' : parseInt(item.product_id.slice(0, 8), 16) % 6 === 3 ? '1514228742587-6b1558fcca3d' : parseInt(item.product_id.slice(0, 8), 16) % 6 === 4 ? '1627123424574-724758594e93' : '1507473885765-e6ed057f782c'}?w=400&h=400&fit=crop`}
+                    alt={item.product?.title || 'Product'}
                     sx={{
                       width: '100%',
                       borderRadius: 2,
@@ -124,7 +126,7 @@ export default function BasketPage() {
                       {item.product?.title || 'Product'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      ${(item.product?.price || 0).toFixed(2)} each
+                      ${Number(item.product?.price || 0).toFixed(2)} each
                     </Typography>
                   </Box>
                   <Box>
@@ -134,7 +136,7 @@ export default function BasketPage() {
                         onClick={() => handleUpdateQuantity(item.product_id, 'remove')}
                         disabled={updating}
                       >
-                        {item.quantity === 1 ? <Delete /> : <Remove />}
+                        {Number(item.quantity) === 1 ? <Delete /> : <Remove />}
                       </IconButton>
                       <Typography sx={{ minWidth: 30, textAlign: 'center' }}>
                         {item.quantity}
@@ -148,7 +150,7 @@ export default function BasketPage() {
                       </IconButton>
                     </Box>
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                      ${((item.product?.price || 0) * (item.quantity || 0)).toFixed(2)}
+                      ${(Number(item.product?.price || 0) * Number(item.quantity || 0)).toFixed(2)}
                     </Typography>
                   </Box>
                 </Box>
