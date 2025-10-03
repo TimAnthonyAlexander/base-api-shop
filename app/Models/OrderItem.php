@@ -22,6 +22,8 @@ class OrderItem extends BaseModel
 
     public int $quantity = 1;
 
+    public float $price = 0.0;
+
     // Optional: Define custom table name
     // protected static ?string $table = 'OrderItem_table';
 

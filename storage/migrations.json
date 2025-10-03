@@ -324,6 +324,24 @@
             "table": "setting",
             "operation": "add_index",
             "warning": null
+        },
+        {
+            "id": "mig_2463a576c040",
+            "sql": "ALTER TABLE `order` ADD COLUMN `total_price` DOUBLE NOT NULL DEFAULT '0'",
+            "destructive": false,
+            "generated_at": "2025-10-03T13:58:57+00:00",
+            "table": "order",
+            "operation": "add_column",
+            "warning": null
+        },
+        {
+            "id": "mig_23b8512a6751",
+            "sql": "ALTER TABLE `order_item` ADD COLUMN `price` DOUBLE NOT NULL DEFAULT '0'",
+            "destructive": false,
+            "generated_at": "2025-10-03T13:58:57+00:00",
+            "table": "order_item",
+            "operation": "add_column",
+            "warning": null
         }
     ]
 }

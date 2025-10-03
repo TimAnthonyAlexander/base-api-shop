@@ -15,6 +15,8 @@ class Order extends BaseModel
 
     public string $status;
 
+    public float $total_price = 0.0;
+
     public static array $indexes = [
         'user_id' => 'index',
         'status' => 'index'
@@ -25,24 +27,30 @@ class Order extends BaseModel
         $order = new self();
         $order->user_id = $basket->user_id;
         $order->status = 'pending';
-        $order->save();
+        $totalPrice = 0.0;
 
         foreach ($basket->items()->get() as $baseModel) {
             assert($baseModel instanceof BasketItem);
 
-            $orderItem = new OrderItem();
-            $orderItem->order_id = $order->id;
-            $orderItem->product_id = $baseModel->product_id;
-            $orderItem->quantity = $baseModel->quantity;
-            $orderItem->save();
-
-            // Reduce product stock
             $product = Product::find($baseModel->product_id);
             if ($product instanceof Product) {
+                $orderItem = new OrderItem();
+                $orderItem->order_id = $order->id;
+                $orderItem->product_id = $baseModel->product_id;
+                $orderItem->quantity = $baseModel->quantity;
+                $orderItem->price = $product->price; // Store price at time of order
+                $orderItem->save();
+
+                $totalPrice += $product->price * $baseModel->quantity;
+
+                // Reduce product stock
                 $product->stock -= $baseModel->quantity;
                 $product->save();
             }
         }
+
+        $order->total_price = $totalPrice;
+        $order->save();
 
         return $order;
     }

@@ -1,6 +1,8 @@
 <?php
 
 use App\Controllers\AdminThemeController;
+use App\Controllers\AdminProductController;
+use App\Controllers\AdminOrderController;
 use App\Controllers\BasketController;
 use BaseApi\App;
 use App\Controllers\CheckoutCancelController;
@@ -194,19 +196,94 @@ $router->delete('/files', [
 // Admin Endpoints
 // ================================
 
-// Get current theme
+// Theme management
 $router->get('/admin/theme', [
     AuthMiddleware::class,
     AdminMiddleware::class,
     AdminThemeController::class,
 ]);
 
-// Update theme
 $router->post('/admin/theme', [
     AuthMiddleware::class,
     AdminMiddleware::class,
     RateLimitMiddleware::class => ['limit' => '10/1m'],
     AdminThemeController::class,
+]);
+
+// Product management
+$router->get('/admin/products', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    AdminProductController::class,
+]);
+
+$router->get('/admin/product/{id}', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    AdminProductController::class,
+]);
+
+$router->post('/admin/product', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '20/1m'],
+    AdminProductController::class,
+]);
+
+$router->put('/admin/product/{id}', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '20/1m'],
+    AdminProductController::class,
+]);
+
+$router->delete('/admin/product/{id}', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '20/1m'],
+    AdminProductController::class,
+]);
+
+// Product image management
+$router->post('/admin/product/{id}/image', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '30/1m'],
+    AdminProductController::class,
+]);
+
+$router->delete('/admin/product/image/{image_id}', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '30/1m'],
+    AdminProductController::class,
+]);
+
+// Order management
+$router->get('/admin/orders', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    AdminOrderController::class,
+]);
+
+$router->get('/admin/order/{id}', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    AdminOrderController::class,
+]);
+
+$router->put('/admin/order/{id}', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '20/1m'],
+    AdminOrderController::class,
+]);
+
+// Analytics
+$router->get('/admin/analytics', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    AdminOrderController::class,
 ]);
 
 // ================================

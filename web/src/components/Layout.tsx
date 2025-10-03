@@ -9,7 +9,7 @@ import {
     IconButton,
     Badge,
 } from '@mui/material';
-import { ShoppingCart, Person, AdminPanelSettings } from '@mui/icons-material';
+import { ShoppingCart, Person } from '@mui/icons-material';
 import { useGetMe } from '../hooks';
 import { useEffect, useState } from 'react';
 import { getBasket } from '../client';
