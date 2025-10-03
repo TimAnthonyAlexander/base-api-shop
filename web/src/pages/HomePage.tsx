@@ -54,8 +54,8 @@ export default function HomePage() {
             <Box
                 sx={{
                     background: 'linear-gradient(135deg, #fafafa 0%, #f0f0ff 100%)',
-                    pt: { xs: 8, md: 12 },
-                    pb: { xs: 12, md: 16 },
+                    pt: { xs: 4, md: 6 },
+                    pb: { xs: 6, md: 8 },
                     position: 'relative',
                     overflow: 'hidden',
                 }}
@@ -74,7 +74,7 @@ export default function HomePage() {
                                 WebkitTextFillColor: 'transparent',
                             }}
                         >
-                            Discover Minimalist Excellence
+                            Discover Excellence
                         </Typography>
                         <Typography
                             variant="h5"
