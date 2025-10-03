@@ -2,7 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Models\Product;
+use BaseApi\App;
+use BaseApi\Cache\Cache;
 use BaseApi\Controllers\Controller;
 use BaseApi\Http\JsonResponse;
 
@@ -24,10 +25,22 @@ class ProductSearchController extends Controller
             ]);
         }
 
-        $foundProducts = Product::whereConditions([
-            ['column' => 'title', 'operator' => 'LIKE', 'value' => '%' . $this->query . '%'],
-            ['column' => 'description', 'operator' => 'LIKE', 'value' => '%' . $this->query . '%'],
-        ], true)->get();
+        if (Cache::has('product_search_' . md5($this->query))) {
+            return JsonResponse::ok([
+                'products' => Cache::get('product_search_' . md5($this->query)),
+                'query' => $this->query,
+            ]);
+        }
+
+        $sql = 'SELECT * FROM `product` WHERE (`title` LIKE ? OR `description` LIKE ?) AND `stock` >= ?;';
+
+        $foundProducts = App::connection()->query($sql, [
+            '%' . $this->query . '%',
+            '%' . $this->query . '%',
+            1,
+        ]);
+
+        Cache::put('product_search_' . md5($this->query), $foundProducts, 300);
 
         return JsonResponse::ok([
             'products' => $foundProducts,

@@ -17,19 +17,11 @@ class ProductRecommendationsController extends Controller
 
     public function get(): JsonResponse
     {
-        // Get all products, shuffle for "recommendations"
-        $allProducts = Product::all();
-        
-        // Shuffle for variety
-        shuffle($allProducts);
-        
-        // Limit the results
-        $recommendations = array_slice($allProducts, 0, $this->limit);
+        $allProducts = Product::where('stock', '>=', 1)->limit($this->limit)->get();
 
         return JsonResponse::ok([
-            'products' => $recommendations,
+            'products' => $allProducts,
             'limit' => $this->limit,
         ]);
     }
 }
-
