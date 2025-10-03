@@ -24,6 +24,7 @@ export interface User {
 
 export interface GetProductByIdPathParams {
   id: string;
+  [key: string]: string | number;
 }
 
 export interface GetProductByIdQueryParams {
@@ -67,6 +68,7 @@ export type GetOrderResponse = Envelope<unknown>;
 
 export interface GetOrderByIdPathParams {
   id: string | null;
+  [key: string]: string | number | null;
 }
 
 export type GetOrderByIdResponse = Envelope<unknown>;

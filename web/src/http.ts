@@ -7,14 +7,21 @@ export interface HttpOptions {
 }
 
 export class ApiError extends Error {
+  status: number;
+  requestId?: string;
+  errors?: Record<string, string>;
+
   constructor(
     message: string,
-    public status: number,
-    public requestId?: string,
-    public errors?: Record<string, string>
+    status: number,
+    requestId?: string,
+    errors?: Record<string, string>
   ) {
     super(message);
     this.name = 'ApiError';
+    this.status = status;
+    this.requestId = requestId;
+    this.errors = errors;
   }
 }
 

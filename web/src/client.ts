@@ -1,7 +1,7 @@
 // Generated API client functions for Shop
 // Do not edit manually - regenerate with: ./mason types:generate
 
-import { http, HttpOptions } from './http';
+import { http, type HttpOptions } from './http';
 import { buildPath } from './routes';
 import * as Types from './types';
 

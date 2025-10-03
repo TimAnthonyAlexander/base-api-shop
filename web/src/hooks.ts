@@ -1,8 +1,8 @@
 // Generated React hooks for Shop
 // Do not edit manually - regenerate with: ./mason types:generate
 
-import { useState, useEffect, useCallback, DependencyList } from 'react';
-import { HttpOptions } from './http';
+import { useState, useEffect, useCallback, type DependencyList } from 'react';
+import { type HttpOptions } from './http';
 import * as Api from './client';
 import * as Types from './types';
 
@@ -487,7 +487,7 @@ export function usePostLogout(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const mutate = useCallback(async (variables: {}) => {
+  const mutate = useCallback(async (_variables: {}) => {
     setLoading(true);
     setError(null);
     
@@ -600,7 +600,7 @@ export function usePostFileUpload(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const mutate = useCallback(async (variables: {}) => {
+  const mutate = useCallback(async (_variables: {}) => {
     setLoading(true);
     setError(null);
     
@@ -675,7 +675,7 @@ export function useDeleteFileUpload(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const mutate = useCallback(async (variables: {}) => {
+  const mutate = useCallback(async (_variables: {}) => {
     setLoading(true);
     setError(null);
     

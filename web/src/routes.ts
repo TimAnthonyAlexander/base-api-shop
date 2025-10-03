@@ -33,13 +33,15 @@ export type RouteKey = keyof typeof Routes;
  */
 export function buildPath<K extends RouteKey>(
   key: K,
-  params?: Record<string, string | number>
+  params?: Record<string, string | number | null>
 ): string {
-  let path = Routes[key];
+  let path: string = Routes[key];
 
   if (params) {
     for (const [paramKey, paramValue] of Object.entries(params)) {
-      path = path.replace(`{${paramKey}}`, encodeURIComponent(String(paramValue)));
+      if (paramValue !== null && paramValue !== undefined) {
+        path = path.replace(`{${paramKey}}`, encodeURIComponent(String(paramValue)));
+      }
     }
   }
 
