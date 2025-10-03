@@ -306,6 +306,24 @@
             "table": "product",
             "operation": "modify_column",
             "warning": null
+        },
+        {
+            "id": "mig_529f7a44d110",
+            "sql": "CREATE TABLE `setting` (\n  `key` VARCHAR(255) NOT NULL DEFAULT '',\n  `value` VARCHAR(255) NOT NULL DEFAULT '',\n  `id` VARCHAR(36) NOT NULL DEFAULT '',\n  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,\n  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+            "destructive": false,
+            "generated_at": "2025-10-03T10:26:33+00:00",
+            "table": "setting",
+            "operation": "create_table",
+            "warning": null
+        },
+        {
+            "id": "mig_820aa3ee02c9",
+            "sql": "ALTER TABLE `setting` ADD UNIQUE KEY `uniq_setting_key` (`key`)",
+            "destructive": false,
+            "generated_at": "2025-10-03T10:26:33+00:00",
+            "table": "setting",
+            "operation": "add_index",
+            "warning": null
         }
     ]
 }

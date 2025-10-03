@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\AdminThemeController;
 use App\Controllers\BasketController;
 use BaseApi\App;
 use App\Controllers\CheckoutCancelController;
@@ -15,6 +16,8 @@ use App\Controllers\OrderController;
 use App\Controllers\ProductController;
 use App\Controllers\ProductSearchController;
 use App\Controllers\ProductRecommendationsController;
+use App\Controllers\ThemeController;
+use App\Middleware\AdminMiddleware;
 use BaseApi\Http\Middleware\AuthMiddleware;
 use BaseApi\Http\Middleware\RateLimitMiddleware;
 
@@ -122,6 +125,11 @@ $router->get('/health', [
     HealthController::class,
 ]);
 
+// Get current theme (public)
+$router->get('/theme', [
+    ThemeController::class,
+]);
+
 // ================================  
 // Authentication Endpoints
 // ================================
@@ -180,6 +188,25 @@ $router->get('/files/info', [
 $router->delete('/files', [
     AuthMiddleware::class,
     FileUploadController::class,
+]);
+
+// ================================
+// Admin Endpoints
+// ================================
+
+// Get current theme
+$router->get('/admin/theme', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    AdminThemeController::class,
+]);
+
+// Update theme
+$router->post('/admin/theme', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '10/1m'],
+    AdminThemeController::class,
 ]);
 
 // ================================

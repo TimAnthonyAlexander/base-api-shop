@@ -9,7 +9,7 @@ import {
     IconButton,
     Badge,
 } from '@mui/material';
-import { ShoppingCart, Person } from '@mui/icons-material';
+import { ShoppingCart, Person, AdminPanelSettings } from '@mui/icons-material';
 import { useGetMe } from '../hooks';
 import { useEffect, useState } from 'react';
 import { getBasket } from '../client';
@@ -19,6 +19,8 @@ export default function Layout() {
 
     const { data: meData } = useGetMe(undefined, { enabled: true });
     const isAuthenticated = !!meData;
+    const user = (meData?.data as any)?.user || (meData?.data as any);
+    const isAdmin = user?.role === 'admin';
 
     const [basketCount, setBasketCount] = useState(0);
 
@@ -93,6 +95,21 @@ export default function Layout() {
                             >
                                 Orders
                             </Button>
+
+                            {isAdmin && (
+                                <Button
+                                    component={RouterLink}
+                                    to="/admin"
+                                    startIcon={<AdminPanelSettings />}
+                                    sx={{
+                                        color: 'text.primary',
+                                        display: { xs: 'none', md: 'inline-flex' },
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    Admin
+                                </Button>
+                            )}
 
                             <IconButton component={RouterLink} to="/basket" sx={{ color: 'text.primary' }}>
                                 <Badge badgeContent={basketCount} color="secondary">
