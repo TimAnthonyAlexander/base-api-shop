@@ -151,7 +151,7 @@ const baseNoShadow = {
             styleOverrides: {
                 root: {
                     boxShadow: 'none',
-                    textTransform: 'none',
+                    textTransform: 'none' as const,
                     borderRadius: 10,
                     padding: '12px 28px',
                     '&:hover': { boxShadow: 'none' },
