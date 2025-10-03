@@ -84,7 +84,7 @@ class BasketController extends Controller
             return JsonResponse::forbidden('You do not own this basket');
         }
 
-        $product = Product::find($this->product_id);
+        $product = Product::cached()->find($this->product_id);
 
         if (!$product instanceof Product) {
             return JsonResponse::notFound('Product not found');
@@ -115,46 +115,61 @@ class BasketController extends Controller
 
             if ($basketItem->quantity <= 0) {
                 $basketItem->delete();
-
-                return JsonResponse::ok([
-                    'basket_item' => null,
-                    'message' => 'Product removed from basket',
-                ]);
+            } else {
+                $basketItem->save();
             }
+        } else {
+            $basket->stripe_checkout = '';
+            $basket->save();
 
-            $basketItem->save();
+            if ($basketItem instanceof BasketItem) {
+                if ($product->stock <= $basketItem->quantity) {
+                    return JsonResponse::badRequest('Not enough stock for this product');
+                }
 
-            return JsonResponse::ok([
-                'basket_item' => $basketItem,
-                'message' => 'Product quantity updated in basket',
-            ]);
+                $basketItem->quantity += 1;
+                $basketItem->save();
+            } else {
+                $basketItem = new BasketItem();
+                $basketItem->basket_id = $basket->id;
+                $basketItem->product_id = $product->id;
+                $basketItem->quantity = 1;
+                $basketItem->save();
+            }
         }
 
-        $basket->stripe_checkout = '';
-        $basket->save();
+        // Return the full basket data like GET does
+        $basketItems = BasketItem::where('basket_id', '=', $basket->id)->get();
 
-        if ($basketItem instanceof BasketItem) {
-            if ($product->stock <= $basketItem->quantity) {
-                return JsonResponse::badRequest('Not enough stock for this product');
-            }
-
-            $basketItem->quantity += 1;
-            $basketItem->save();
-
-            return JsonResponse::ok([
-                'basket_item' => $basketItem,
-                'message' => 'Product quantity updated in basket',
-            ]);
+        $enrichedItems = [];
+        foreach ($basketItems as $basketItem) {
+            $product = Product::cached()->find($basketItem->product_id);
+            $itemData = [
+                'id' => $basketItem->id,
+                'basket_id' => $basketItem->basket_id,
+                'product_id' => $basketItem->product_id,
+                'quantity' => $basketItem->quantity,
+                'created_at' => $basketItem->created_at,
+                'updated_at' => $basketItem->updated_at,
+                'product' => $product instanceof Product ? [
+                    'id' => $product->id,
+                    'title' => $product->title,
+                    'description' => $product->description,
+                    'price' => $product->price,
+                    'stock' => $product->stock,
+                ] : null,
+            ];
+            $enrichedItems[] = $itemData;
         }
 
-        $basketItem = new BasketItem();
-        $basketItem->basket_id = $basket->id;
-        $basketItem->product_id = $product->id;
-        $basketItem->quantity = 1;
-        $basketItem->save();
+        if ($enrichedItems !== []) {
+            $basket->stripe_checkout = $basket->createStripeCheckout();
+            $basket->save();
+        }
 
-        return JsonResponse::created([
-            'basket_item' => $basketItem,
+        return JsonResponse::ok([
+            'basket' => $basket,
+            'items' => $enrichedItems,
         ]);
     }
 }

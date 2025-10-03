@@ -16,29 +16,25 @@ import { useGetBasket, usePostBasket } from '../hooks';
 
 export default function BasketPage() {
   const navigate = useNavigate();
-  const { data: basketData, loading, error, refetch } = useGetBasket();
-  const [optimisticItems, setOptimisticItems] = useState<any[]>([]);
+  const { data: basketData, loading, error } = useGetBasket();
+  const [currentBasketData, setCurrentBasketData] = useState(basketData);
 
-  const { mutate: updateBasket } = usePostBasket({
-    onSuccess: () => {
-      // Refetch in background to sync with server state
-      refetch();
-    },
-    onError: () => {
-      // Revert optimistic update on error
-      refetch();
-    },
-  });
-
-  // Sync optimistic state with fetched data
+  // Update local state when fetched data changes
   useEffect(() => {
-    if (basketData?.data) {
-      setOptimisticItems((basketData.data as any)?.items || []);
+    if (basketData) {
+      setCurrentBasketData(basketData);
     }
   }, [basketData]);
 
+  const { mutate: updateBasket, loading: updating } = usePostBasket({
+    onSuccess: (data) => {
+      // Use the returned data instead of refetching
+      setCurrentBasketData(data);
+    },
+  });
+
   // Only show full-page loader on initial load (when there's no data yet)
-  if (loading && !basketData) {
+  if (loading && !currentBasketData) {
     return (
       <Container maxWidth="lg" sx={{ py: 8, textAlign: 'center' }}>
         <CircularProgress />
@@ -59,41 +55,11 @@ export default function BasketPage() {
     );
   }
 
-  const basket = (basketData?.data as any)?.basket;
-  const items = optimisticItems;
+  const basket = (currentBasketData?.data as any)?.basket;
+  const items = (currentBasketData?.data as any)?.items || [];
   const stripeCheckoutUrl = basket?.stripe_checkout;
 
   const handleUpdateQuantity = (productId: string, action: 'add' | 'remove') => {
-    // Optimistic update: immediately update UI
-    setOptimisticItems((currentItems) => {
-      const newItems = [...currentItems];
-      const itemIndex = newItems.findIndex((item) => item.product_id === productId);
-      
-      if (itemIndex === -1) return currentItems;
-      
-      if (action === 'remove') {
-        if (newItems[itemIndex].quantity <= 1) {
-          // Remove item from array
-          newItems.splice(itemIndex, 1);
-        } else {
-          // Decrease quantity
-          newItems[itemIndex] = {
-            ...newItems[itemIndex],
-            quantity: newItems[itemIndex].quantity - 1,
-          };
-        }
-      } else if (action === 'add') {
-        // Increase quantity
-        newItems[itemIndex] = {
-          ...newItems[itemIndex],
-          quantity: newItems[itemIndex].quantity + 1,
-        };
-      }
-      
-      return newItems;
-    });
-
-    // Call API in background
     updateBasket({
       body: {
         product_id: productId,
@@ -179,6 +145,7 @@ export default function BasketPage() {
                       <IconButton
                         size="small"
                         onClick={() => handleUpdateQuantity(item.product_id, 'remove')}
+                        disabled={updating}
                       >
                         {Number(item.quantity) === 1 ? <Delete /> : <Remove />}
                       </IconButton>
@@ -188,6 +155,7 @@ export default function BasketPage() {
                       <IconButton
                         size="small"
                         onClick={() => handleUpdateQuantity(item.product_id, 'add')}
+                        disabled={updating}
                       >
                         <Add />
                       </IconButton>
