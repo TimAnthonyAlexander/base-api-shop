@@ -1,6 +1,7 @@
 # Shop API
 
 A modern e-commerce REST API built with [BaseAPI](https://github.com/TimAnthonyAlexander/base-api) - a lightweight PHP 8.4+ framework.
+Frontend built in web/ using React + MUI.
 
 ## Features
 
@@ -11,6 +12,13 @@ A modern e-commerce REST API built with [BaseAPI](https://github.com/TimAnthonyA
 - **File Uploads** - Upload, retrieve, and delete files with validation
 - **Background Jobs** - Async email sending, database backups, image processing
 - **Health Checks** - Monitor database and cache status
+
+## Screenshots
+
+<img src="recommendations.png" alt="Product Recommendations" width="600"/>
+<img src="product.png" alt="Product Details" width="600"/>
+<img src="basket.png" alt="Shopping Basket" width="600"/>
+<img src="themes.png" alt="Light and Dark Themes" width="600"/>
 
 ## Requirements
 
