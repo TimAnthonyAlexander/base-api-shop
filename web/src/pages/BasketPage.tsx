@@ -9,7 +9,7 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { Add, Remove, Delete, ShoppingBag } from '@mui/icons-material';
+import { Add, Remove, Delete, ShoppingBag, ImageNotSupported } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useGetBasket, usePostBasket } from '../hooks';
@@ -111,27 +111,48 @@ export default function BasketPage() {
           }}
         >
           <Box>
-            {items.map((item: any) => (
-              <Card key={item.id} sx={{ mb: 2, p: 2 }}>
-                <Box
-                  sx={{
-                    display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', sm: '120px 1fr auto' },
-                    gap: 2,
-                    alignItems: 'center',
-                  }}
-                >
+            {items.map((item: any) => {
+              const imageUrl = item.product?.images && item.product.images.length > 0 
+                ? item.product.images[0] 
+                : null;
+
+              return (
+                <Card key={item.id} sx={{ mb: 2, p: 2 }}>
                   <Box
-                    component="img"
-                    src={`https://images.unsplash.com/photo-${parseInt(item.product_id.slice(0, 8), 16) % 6 === 0 ? '1505740420928-5e560c06d30e' : parseInt(item.product_id.slice(0, 8), 16) % 6 === 1 ? '1523275335684-37898b6baf30' : parseInt(item.product_id.slice(0, 8), 16) % 6 === 2 ? '1553062407-98eeb64c6a62' : parseInt(item.product_id.slice(0, 8), 16) % 6 === 3 ? '1514228742587-6b1558fcca3d' : parseInt(item.product_id.slice(0, 8), 16) % 6 === 4 ? '1627123424574-724758594e93' : '1507473885765-e6ed057f782c'}?w=400&h=400&fit=crop`}
-                    alt={item.product?.title || 'Product'}
                     sx={{
-                      width: '100%',
-                      borderRadius: 2,
-                      aspectRatio: '1 / 1',
-                      objectFit: 'cover',
+                      display: 'grid',
+                      gridTemplateColumns: { xs: '1fr', sm: '120px 1fr auto' },
+                      gap: 2,
+                      alignItems: 'center',
                     }}
-                  />
+                  >
+                    {imageUrl ? (
+                      <Box
+                        component="img"
+                        src={imageUrl}
+                        alt={item.product?.title || 'Product'}
+                        sx={{
+                          width: '100%',
+                          borderRadius: 2,
+                          aspectRatio: '1 / 1',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          width: '100%',
+                          borderRadius: 2,
+                          aspectRatio: '1 / 1',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          bgcolor: 'grey.100',
+                        }}
+                      >
+                        <ImageNotSupported sx={{ fontSize: 40, color: 'grey.400' }} />
+                      </Box>
+                    )}
                   <Box>
                     <Typography variant="h6" sx={{ mb: 1 }}>
                       {item.product?.title || 'Product'}
@@ -166,7 +187,8 @@ export default function BasketPage() {
                   </Box>
                 </Box>
               </Card>
-            ))}
+            );
+            })}
           </Box>
 
           <Card sx={{ position: 'sticky', top: 100, p: 3, height: 'fit-content' }}>

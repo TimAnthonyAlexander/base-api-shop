@@ -11,20 +11,10 @@ import {
     InputAdornment,
     CircularProgress,
 } from '@mui/material';
-import { Search, ShoppingBag } from '@mui/icons-material';
+import { Search, ShoppingBag, ImageNotSupported } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useGetProductRecommendations, useGetProductSearch } from '../hooks';
-
-// Placeholder images for products without images
-const placeholderImages = [
-    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=800&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&h=800&fit=crop',
-];
 
 export default function HomePage() {
     const navigate = useNavigate();
@@ -150,27 +140,46 @@ export default function HomePage() {
                                 gap: 4,
                             }}
                         >
-                            {products.map((product: any, index: number) => (
-                                <Card
-                                    key={product.id}
-                                    sx={{
-                                        height: '100%',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        cursor: 'pointer',
-                                    }}
-                                    onClick={() => navigate(`/product/${product.id}`)}
-                                >
-                                    <CardMedia
-                                        component="img"
-                                        height="300"
-                                        image={placeholderImages[index % placeholderImages.length]}
-                                        alt={product.title}
+                            {products.map((product: any) => {
+                                const imageUrl = product.images && product.images.length > 0 
+                                    ? product.images[0] 
+                                    : null;
+
+                                return (
+                                    <Card
+                                        key={product.id}
                                         sx={{
-                                            objectFit: 'cover',
+                                            height: '100%',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            cursor: 'pointer',
                                         }}
-                                    />
-                                    <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                                        onClick={() => navigate(`/product/${product.id}`)}
+                                    >
+                                        {imageUrl ? (
+                                            <CardMedia
+                                                component="img"
+                                                height="300"
+                                                image={imageUrl}
+                                                alt={product.title}
+                                                sx={{
+                                                    objectFit: 'cover',
+                                                }}
+                                            />
+                                        ) : (
+                                            <Box
+                                                sx={{
+                                                    height: 300,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    bgcolor: 'grey.100',
+                                                }}
+                                            >
+                                                <ImageNotSupported sx={{ fontSize: 60, color: 'grey.400' }} />
+                                            </Box>
+                                        )}
+                                        <CardContent sx={{ flexGrow: 1, p: 3 }}>
                                         <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
                                             {product.title}
                                         </Typography>
@@ -204,7 +213,8 @@ export default function HomePage() {
                                         </Button>
                                     </CardActions>
                                 </Card>
-                            ))}
+                            );
+                            })}
                         </Box>
 
                         {products.length === 0 && !loading && (

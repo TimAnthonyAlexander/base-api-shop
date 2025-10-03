@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\ProductImage;
 use App\Models\Basket;
 use App\Models\BasketItem;
 use App\Models\Product;
@@ -36,6 +37,26 @@ class BasketController extends Controller
         $enrichedItems = [];
         foreach ($basketItems as $basketItem) {
             $product = Product::find($basketItem->product_id);
+            $productData = null;
+            if ($product instanceof Product) {
+                $images = $product->images()->get();
+                $imageUrls = [];
+                foreach ($images as $image) {
+                    if ($image instanceof ProductImage) {
+                        $imageUrls[] = $image->image_path;
+                    }
+                }
+
+                $productData = [
+                    'id' => $product->id,
+                    'title' => $product->title,
+                    'description' => $product->description,
+                    'price' => $product->price,
+                    'stock' => $product->stock,
+                    'images' => $imageUrls,
+                ];
+            }
+
             $itemData = [
                 'id' => $basketItem->id,
                 'basket_id' => $basketItem->basket_id,
@@ -43,13 +64,7 @@ class BasketController extends Controller
                 'quantity' => $basketItem->quantity,
                 'created_at' => $basketItem->created_at,
                 'updated_at' => $basketItem->updated_at,
-                'product' => $product instanceof Product ? [
-                    'id' => $product->id,
-                    'title' => $product->title,
-                    'description' => $product->description,
-                    'price' => $product->price,
-                    'stock' => $product->stock,
-                ] : null,
+                'product' => $productData,
             ];
             $enrichedItems[] = $itemData;
         }
@@ -144,6 +159,26 @@ class BasketController extends Controller
         $enrichedItems = [];
         foreach ($basketItems as $basketItem) {
             $product = Product::cached()->find($basketItem->product_id);
+            $productData = null;
+            if ($product instanceof Product) {
+                $images = $product->images()->get();
+                $imageUrls = [];
+                foreach ($images as $image) {
+                    if ($image instanceof ProductImage) {
+                        $imageUrls[] = $image->image_path;
+                    }
+                }
+
+                $productData = [
+                    'id' => $product->id,
+                    'title' => $product->title,
+                    'description' => $product->description,
+                    'price' => $product->price,
+                    'stock' => $product->stock,
+                    'images' => $imageUrls,
+                ];
+            }
+
             $itemData = [
                 'id' => $basketItem->id,
                 'basket_id' => $basketItem->basket_id,
@@ -151,13 +186,7 @@ class BasketController extends Controller
                 'quantity' => $basketItem->quantity,
                 'created_at' => $basketItem->created_at,
                 'updated_at' => $basketItem->updated_at,
-                'product' => $product instanceof Product ? [
-                    'id' => $product->id,
-                    'title' => $product->title,
-                    'description' => $product->description,
-                    'price' => $product->price,
-                    'stock' => $product->stock,
-                ] : null,
+                'product' => $productData,
             ];
             $enrichedItems[] = $itemData;
         }

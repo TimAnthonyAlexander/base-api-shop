@@ -120,11 +120,13 @@ export default function Layout() {
                                 </Button>
                             )}
 
-                            <IconButton component={RouterLink} to="/basket" sx={{ color: 'text.primary', ml: 2 }}>
-                                <Badge badgeContent={basketCount} color="secondary">
-                                    <ShoppingCart />
-                                </Badge>
-                            </IconButton>
+                            {isAuthenticated &&
+                                <IconButton component={RouterLink} to="/basket" sx={{ color: 'text.primary', ml: 2 }}>
+                                    <Badge badgeContent={basketCount} color="secondary">
+                                        <ShoppingCart />
+                                    </Badge>
+                                </IconButton>
+                            }
 
                             <IconButton
                                 onClick={() => navigate(isAuthenticated ? '/me' : '/auth')}

@@ -10,90 +10,9 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { ShoppingCart, ArrowBack } from '@mui/icons-material';
+import { ShoppingCart, ArrowBack, ImageNotSupported } from '@mui/icons-material';
 import { usePostBasket, useGetProductById } from '../hooks';
 import { useState } from 'react';
-
-// Placeholder images for products
-const placeholderImages = [
-  'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&h=800&fit=crop',
-  'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&h=800&fit=crop',
-  'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1200&h=800&fit=crop',
-  'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=1200&h=800&fit=crop',
-  'https://images.unsplash.com/photo-1627123424574-724758594e93?w=1200&h=800&fit=crop',
-  'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=1200&h=800&fit=crop',
-];
-
-// Fallback product data for display purposes
-const placeholderFeatures = [
-  'High Quality',
-  'Fast Shipping',
-  'Satisfaction Guaranteed',
-  'Easy Returns',
-];
-
-const fallbackPlaceholderProducts = [
-  {
-    id: '1',
-    title: 'Premium Wireless Headphones',
-    description: 'Experience crystal-clear sound with active noise cancellation. Premium materials and ergonomic design for all-day comfort.',
-    longDescription: 'These premium wireless headphones deliver exceptional audio quality with advanced active noise cancellation technology. Featuring 40mm drivers, Bluetooth 5.0 connectivity, and up to 30 hours of battery life. The lightweight design and memory foam ear cushions ensure comfortable all-day wear.',
-    price: 299.99,
-    stock: 50,
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&h=800&fit=crop',
-    features: ['Active Noise Cancellation', '30-hour battery life', 'Bluetooth 5.0', 'Premium materials'],
-  },
-  {
-    id: '2',
-    title: 'Smart Watch Pro',
-    description: 'Track your fitness, stay connected',
-    longDescription: 'Advanced fitness tracking meets elegant design. Monitor your heart rate, track workouts, receive notifications, and more. Water-resistant up to 50 meters with a battery that lasts up to 7 days.',
-    price: 399.99,
-    stock: 30,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&h=800&fit=crop',
-    features: ['Heart rate monitor', '7-day battery', 'Water-resistant', 'GPS tracking'],
-  },
-  {
-    id: '3',
-    title: 'Minimalist Backpack',
-    description: 'Perfect blend of style and functionality',
-    longDescription: 'Crafted from durable water-resistant fabric with a minimalist design. Features a padded laptop compartment, multiple organization pockets, and ergonomic straps for comfortable carrying.',
-    price: 89.99,
-    stock: 100,
-    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1200&h=800&fit=crop',
-    features: ['Water-resistant', 'Laptop compartment', 'Ergonomic design', 'Durable materials'],
-  },
-  {
-    id: '4',
-    title: 'Ceramic Coffee Mug',
-    description: 'Handcrafted, elegant design',
-    longDescription: 'Handcrafted ceramic mug with a smooth matte finish. Perfect size for your morning coffee or afternoon tea. Microwave and dishwasher safe.',
-    price: 24.99,
-    stock: 200,
-    image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=1200&h=800&fit=crop',
-    features: ['Handcrafted ceramic', 'Microwave safe', 'Dishwasher safe', 'Perfect size'],
-  },
-  {
-    id: '5',
-    title: 'Leather Wallet',
-    description: 'Premium leather, timeless design',
-    longDescription: 'Crafted from genuine full-grain leather that ages beautifully. Slim design with RFID protection and multiple card slots. The perfect everyday carry.',
-    price: 79.99,
-    stock: 75,
-    image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=1200&h=800&fit=crop',
-    features: ['Full-grain leather', 'RFID protection', 'Slim design', 'Multiple card slots'],
-  },
-  {
-    id: '6',
-    title: 'Desk Lamp',
-    description: 'Modern lighting for your workspace',
-    longDescription: 'Adjustable LED desk lamp with touch controls and multiple brightness levels. Energy-efficient LED technology provides perfect lighting for work or study.',
-    price: 149.99,
-    stock: 45,
-    image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=1200&h=800&fit=crop',
-    features: ['LED technology', 'Adjustable brightness', 'Touch controls', 'Energy-efficient'],
-  },
-];
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -138,10 +57,7 @@ export default function ProductPage() {
     );
   }
 
-  const apiProduct = (productData?.data as any)?.product;
-  
-  // Use API product or fallback to placeholder
-  const product = apiProduct || fallbackPlaceholderProducts.find((p: any) => p.id === id);
+  const product = (productData?.data as any)?.product;
 
   if (!product) {
     return (
@@ -163,12 +79,8 @@ export default function ProductPage() {
     });
   };
 
-  // Get image (use placeholder based on ID hash)
-  const imageIndex = product.id ? parseInt(product.id.slice(0, 8), 16) % placeholderImages.length : 0;
-  const productImage = placeholderImages[imageIndex];
-  
-  // Get features (use placeholder or parse from description)
-  const productFeatures = product.features || placeholderFeatures;
+  // Get first image from product
+  const productImage = product.images && product.images.length > 0 ? product.images[0] : null;
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
@@ -195,16 +107,31 @@ export default function ProductPage() {
           }}
         >
           <Card elevation={0}>
-            <CardMedia
-              component="img"
-              image={productImage}
-              alt={product.title}
-              sx={{
-                borderRadius: 3,
-                aspectRatio: '1 / 1',
-                objectFit: 'cover',
-              }}
-            />
+            {productImage ? (
+              <CardMedia
+                component="img"
+                image={productImage}
+                alt={product.title}
+                sx={{
+                  borderRadius: 3,
+                  aspectRatio: '1 / 1',
+                  objectFit: 'cover',
+                }}
+              />
+            ) : (
+              <Box
+                sx={{
+                  borderRadius: 3,
+                  aspectRatio: '1 / 1',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: 'grey.100',
+                }}
+              >
+                <ImageNotSupported sx={{ fontSize: 100, color: 'grey.400' }} />
+              </Box>
+            )}
           </Card>
 
           <Box sx={{ position: 'sticky', top: 100 }}>
@@ -234,29 +161,8 @@ export default function ProductPage() {
             />
 
             <Typography variant="body1" color="text.secondary" sx={{ mb: 4, lineHeight: 1.8 }}>
-              {product.longDescription || product.description || 'No description available'}
+              {product.description || 'No description available'}
             </Typography>
-
-            {productFeatures && productFeatures.length > 0 && (
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Features
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {productFeatures.map((feature: string, index: number) => (
-                    <Chip
-                      key={index}
-                      label={feature}
-                      variant="outlined"
-                      sx={{
-                        borderColor: 'secondary.main',
-                        color: 'secondary.main',
-                      }}
-                    />
-                  ))}
-                </Box>
-              </Box>
-            )}
 
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Button

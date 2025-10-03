@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\Product;
+use App\Models\ProductImage;
 use BaseApi\App;
 use BaseApi\Cache\Cache;
 use BaseApi\Controllers\Controller;
@@ -40,10 +42,37 @@ class ProductSearchController extends Controller
             1,
         ]);
 
-        Cache::put('product_search_' . md5($this->query), $foundProducts, 300);
+        // Enrich products with images
+        $productsWithImages = [];
+        foreach ($foundProducts as $foundProduct) {
+            $product = Product::find($foundProduct['id']);
+            if ($product instanceof Product) {
+                $images = $product->images()->get();
+                $imageUrls = [];
+                foreach ($images as $image) {
+                    if ($image instanceof ProductImage) {
+                        $imageUrls[] = $image->image_path;
+                    }
+                }
+
+                $productsWithImages[] = [
+                    'id' => $product->id,
+                    'title' => $product->title,
+                    'description' => $product->description,
+                    'price' => $product->price,
+                    'stock' => $product->stock,
+                    'views' => $product->views,
+                    'images' => $imageUrls,
+                    'created_at' => $product->created_at,
+                    'updated_at' => $product->updated_at,
+                ];
+            }
+        }
+
+        Cache::put('product_search_' . md5($this->query), $productsWithImages, 300);
 
         return JsonResponse::ok([
-            'products' => $foundProducts,
+            'products' => $productsWithImages,
             'query' => $this->query,
         ]);
     }

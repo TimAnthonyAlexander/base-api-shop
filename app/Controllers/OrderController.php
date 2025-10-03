@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\ProductImage;
 use App\Models\Basket;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -42,6 +43,14 @@ class OrderController extends Controller
                     $product = $baseModel->product()->first();
 
                     if ($product instanceof Product) {
+                        $images = $product->images()->get();
+                        $imageUrls = [];
+                        foreach ($images as $image) {
+                            if ($image instanceof ProductImage) {
+                                $imageUrls[] = $image->image_path;
+                            }
+                        }
+
                         $itemData = [
                             'id' => $baseModel->id,
                             'order_id' => $baseModel->order_id,
@@ -52,6 +61,7 @@ class OrderController extends Controller
                                 'title' => $product->title,
                                 'description' => $product->description,
                                 'price' => $product->price,
+                                'images' => $imageUrls,
                             ],
                         ];
                         $orderData['items'][] = $itemData;
@@ -93,6 +103,14 @@ class OrderController extends Controller
             $product = $baseModel->product()->first();
 
             if ($product instanceof Product) {
+                $images = $product->images()->get();
+                $imageUrls = [];
+                foreach ($images as $image) {
+                    if ($image instanceof ProductImage) {
+                        $imageUrls[] = $image->image_path;
+                    }
+                }
+
                 $itemData = [
                     'id' => $baseModel->id,
                     'order_id' => $baseModel->order_id,
@@ -103,6 +121,7 @@ class OrderController extends Controller
                         'title' => $product->title,
                         'description' => $product->description,
                         'price' => $product->price,
+                        'images' => $imageUrls,
                     ],
                 ];
                 $orderData['items'][] = $itemData;

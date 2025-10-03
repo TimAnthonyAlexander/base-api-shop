@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\ProductImage;
 use App\Models\Product;
 use BaseApi\Controllers\Controller;
 use BaseApi\Http\JsonResponse;
@@ -36,16 +37,62 @@ class ProductController extends Controller
             $product->views += 1;
             $product->save();
 
+            // Get product images
+            $images = $product->images()->get();
+            $imageUrls = [];
+            foreach ($images as $image) {
+                if ($image instanceof ProductImage) {
+                    $imageUrls[] = $image->image_path;
+                }
+            }
+
+            $productData = [
+                'id' => $product->id,
+                'title' => $product->title,
+                'description' => $product->description,
+                'price' => $product->price,
+                'stock' => $product->stock,
+                'views' => $product->views,
+                'images' => $imageUrls,
+                'created_at' => $product->created_at,
+                'updated_at' => $product->updated_at,
+            ];
+
             return JsonResponse::ok([
-                'product' => $product,
+                'product' => $productData,
             ]);
         }
 
-        // Otherwise, list all products
+        // Otherwise, list all products with images
         $products = Product::all();
+        $productsWithImages = [];
+
+        foreach ($products as $product) {
+            if ($product instanceof Product) {
+                $images = $product->images()->get();
+                $imageUrls = [];
+                foreach ($images as $image) {
+                    if ($image instanceof ProductImage) {
+                        $imageUrls[] = $image->image_path;
+                    }
+                }
+
+                $productsWithImages[] = [
+                    'id' => $product->id,
+                    'title' => $product->title,
+                    'description' => $product->description,
+                    'price' => $product->price,
+                    'stock' => $product->stock,
+                    'views' => $product->views,
+                    'images' => $imageUrls,
+                    'created_at' => $product->created_at,
+                    'updated_at' => $product->updated_at,
+                ];
+            }
+        }
 
         return JsonResponse::ok([
-            'products' => $products,
+            'products' => $productsWithImages,
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use BaseApi\Database\Relations\HasMany;
 use BaseApi\Models\BaseModel;
 
 /**
@@ -29,4 +30,9 @@ class Product extends BaseModel
     public static array $columns = [
         'description' => ['type' => 'TEXT', 'nullable' => true],
     ];
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(ProductImage::class);
+    }
 }
