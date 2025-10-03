@@ -3,6 +3,8 @@
 use App\Controllers\AdminThemeController;
 use App\Controllers\AdminProductController;
 use App\Controllers\AdminProductAttributeController;
+use App\Controllers\AdminProductVariantController;
+use App\Controllers\AdminProductGroupController;
 use App\Controllers\AdminOrderController;
 use App\Controllers\BasketController;
 use BaseApi\App;
@@ -287,6 +289,35 @@ $router->delete('/admin/product/attribute/{attribute_id}', [
     AdminMiddleware::class,
     RateLimitMiddleware::class => ['limit' => '30/1m'],
     AdminProductAttributeController::class,
+]);
+
+// Product variant management
+$router->get('/admin/product/{id}/variants', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    AdminProductVariantController::class,
+]);
+
+$router->post('/admin/product/{id}/variant', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '20/1m'],
+    AdminProductVariantController::class,
+]);
+
+$router->delete('/admin/product/{id}/variant', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '20/1m'],
+    AdminProductVariantController::class,
+]);
+
+// Group products as variants
+$router->post('/admin/products/group', [
+    AuthMiddleware::class,
+    AdminMiddleware::class,
+    RateLimitMiddleware::class => ['limit' => '20/1m'],
+    AdminProductGroupController::class,
 ]);
 
 // Order management

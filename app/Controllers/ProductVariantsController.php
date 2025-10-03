@@ -40,35 +40,39 @@ class ProductVariantsController extends Controller
         $allProducts = Product::all();
         $variants = [];
 
-        foreach ($allProducts as $variantProduct) {
-            if ($variantProduct instanceof Product 
-                && $variantProduct->variant_group === $product->variant_group
-                && $variantProduct->id !== $product->id) {
+        foreach ($allProducts as $allProduct) {
+            if ($allProduct instanceof Product 
+                && $allProduct->variant_group === $product->variant_group
+                && $allProduct->id !== $product->id) {
                 
                 // Get first image
-                $images = $variantProduct->images()->get();
+                $images = $allProduct->images()->get();
                 $imageUrl = null;
-                if (count($images) > 0 && $images[0] instanceof ProductImage) {
+                if ($images !== [] && $images[0] instanceof ProductImage) {
                     $imageUrl = $images[0]->image_path;
                 }
 
                 // Get key attributes (Color, Size, Material)
-                $attributes = $variantProduct->attributes()->get();
+                $attributes = $allProduct->attributes()->get();
                 $variantAttributes = [];
-                foreach ($attributes as $attr) {
-                    if ($attr instanceof ProductAttribute) {
-                        // Only include key differentiating attributes
-                        if (in_array($attr->attribute, ['Color', 'Size', 'Material', 'Storage', 'Capacity'])) {
-                            $variantAttributes[$attr->attribute] = $attr->value;
-                        }
+                foreach ($attributes as $attribute) {
+                    if (!$attribute instanceof ProductAttribute) {
+                        continue;
                     }
+
+                    // Only include key differentiating attributes
+                    if (!in_array($attribute->attribute, ['Color', 'Size', 'Material', 'Storage', 'Capacity'])) {
+                        continue;
+                    }
+
+                    $variantAttributes[$attribute->attribute] = $attribute->value;
                 }
 
                 $variants[] = [
-                    'id' => $variantProduct->id,
-                    'title' => $variantProduct->title,
-                    'price' => $variantProduct->price,
-                    'stock' => $variantProduct->stock,
+                    'id' => $allProduct->id,
+                    'title' => $allProduct->title,
+                    'price' => $allProduct->price,
+                    'stock' => $allProduct->stock,
                     'image' => $imageUrl,
                     'attributes' => $variantAttributes,
                 ];

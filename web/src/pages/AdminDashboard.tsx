@@ -44,12 +44,14 @@ import {
     Receipt,
     CloudUpload,
     Image as ImageIcon,
+    CallSplit,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useGetMe } from '../hooks';
 import { useTheme } from '../contexts/ThemeContext';
 import { themeConfigs, type ThemeName } from '../themes';
 import { getImageUrl } from '../http';
+import VariantManagementDialog from '../components/VariantManagementDialog';
 import {
     postAdminTheme,
     getAdminProducts,
@@ -116,6 +118,8 @@ export default function AdminDashboard() {
         price: 0,
         stock: 0,
     });
+    const [variantDialogOpen, setVariantDialogOpen] = useState(false);
+    const [variantManagementProduct, setVariantManagementProduct] = useState<Product | null>(null);
 
     // Orders state
     const [orders, setOrders] = useState<Order[]>([]);
@@ -652,6 +656,16 @@ export default function AdminDashboard() {
                                                         <TableCell align="right">
                                                             <IconButton
                                                                 size="small"
+                                                                onClick={() => {
+                                                                    setVariantManagementProduct(product);
+                                                                    setVariantDialogOpen(true);
+                                                                }}
+                                                                title="Manage Variants"
+                                                            >
+                                                                <CallSplit fontSize="small" />
+                                                            </IconButton>
+                                                            <IconButton
+                                                                size="small"
                                                                 onClick={() => handleOpenProductDialog(product)}
                                                             >
                                                                 <Edit fontSize="small" />
@@ -972,6 +986,21 @@ export default function AdminDashboard() {
                         )}
                     </DialogActions>
                 </Dialog>
+
+                {/* Variant Management Dialog */}
+                {variantManagementProduct && (
+                    <VariantManagementDialog
+                        open={variantDialogOpen}
+                        onClose={() => {
+                            setVariantDialogOpen(false);
+                            setVariantManagementProduct(null);
+                        }}
+                        product={variantManagementProduct}
+                        onSuccess={() => {
+                            loadProducts();
+                        }}
+                    />
+                )}
             </Container>
         </Box>
     );

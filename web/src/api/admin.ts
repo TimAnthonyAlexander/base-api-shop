@@ -344,3 +344,77 @@ export async function deleteProductAttribute(
 ): Promise<DeleteAttributeResponse> {
   return http.delete<DeleteAttributeResponse>(`/admin/product/attribute/${attributeId}`, options);
 }
+
+// ============================================
+// Product Variant Management
+// ============================================
+
+export interface GetAdminProductVariantsResponse {
+  success: boolean;
+  data: {
+    variants: Product[];
+  };
+}
+
+export interface CreateVariantBody {
+  title: string;
+  description?: string | null;
+  price?: number;
+  stock?: number;
+}
+
+export interface CreateVariantResponse {
+  success: boolean;
+  data: {
+    product: Product;
+  };
+}
+
+export interface GroupProductsBody {
+  product_ids: string[];
+}
+
+export interface GroupProductsResponse {
+  success: boolean;
+  data: {
+    message: string;
+    variant_group: string;
+    product_count: number;
+  };
+}
+
+export interface UngroupProductResponse {
+  success: boolean;
+  data: {
+    message: string;
+  };
+}
+
+export async function getAdminProductVariants(
+  productId: string,
+  options?: HttpOptions
+): Promise<GetAdminProductVariantsResponse> {
+  return http.get<GetAdminProductVariantsResponse>(`/admin/product/${productId}/variants`, options);
+}
+
+export async function createProductVariant(
+  productId: string,
+  body: CreateVariantBody,
+  options?: HttpOptions
+): Promise<CreateVariantResponse> {
+  return http.post<CreateVariantResponse>(`/admin/product/${productId}/variant`, body, options);
+}
+
+export async function ungroupProduct(
+  productId: string,
+  options?: HttpOptions
+): Promise<UngroupProductResponse> {
+  return http.delete<UngroupProductResponse>(`/admin/product/${productId}/variant`, options);
+}
+
+export async function groupProducts(
+  body: GroupProductsBody,
+  options?: HttpOptions
+): Promise<GroupProductsResponse> {
+  return http.post<GroupProductsResponse>('/admin/products/group', body, options);
+}
