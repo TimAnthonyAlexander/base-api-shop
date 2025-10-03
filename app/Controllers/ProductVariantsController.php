@@ -42,8 +42,7 @@ class ProductVariantsController extends Controller
 
         foreach ($allProducts as $allProduct) {
             if ($allProduct instanceof Product 
-                && $allProduct->variant_group === $product->variant_group
-                && $allProduct->id !== $product->id) {
+                && $allProduct->variant_group === $product->variant_group) {
                 
                 // Get first image
                 $images = $allProduct->images()->get();
@@ -75,9 +74,13 @@ class ProductVariantsController extends Controller
                     'stock' => $allProduct->stock,
                     'image' => $imageUrl,
                     'attributes' => $variantAttributes,
+                    'is_current' => $allProduct->id === $product->id,
                 ];
             }
         }
+
+        // Sort variants by ID for deterministic ordering
+        usort($variants, fn($a, $b): int => strcmp($a['id'], $b['id']));
 
         return JsonResponse::ok([
             'variants' => $variants,

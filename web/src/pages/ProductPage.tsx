@@ -55,7 +55,7 @@ export default function ProductPage() {
     const [variants, setVariants] = useState<ProductVariant[]>([]);
 
     const { data: meRaw } = useGetMe(undefined, { enabled: true });
-    const me = meRaw as ApiResponse<MePayload> | undefined;
+    const me = meRaw as unknown as ApiResponse<MePayload> | undefined;
     const user: User | undefined =
         me?.data && typeof me.data === 'object' && 'user' in me.data
             ? (me.data as { user?: User }).user
@@ -235,7 +235,7 @@ export default function ProductPage() {
                                 {product.description || 'No description available'}
                             </Typography>
 
-                            {variants.length > 0 && (
+                            {variants.length > 1 && (
                                 <Box sx={{ mb: 4 }}>
                                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                                         Available Variants
@@ -246,50 +246,78 @@ export default function ProductPage() {
                                                 key={variant.id}
                                                 elevation={0}
                                                 sx={{
-                                                    cursor: 'pointer',
+                                                    cursor: variant.is_current ? 'default' : 'pointer',
                                                     border: '2px solid',
-                                                    borderColor: 'grey.200',
+                                                    borderColor: variant.is_current ? 'primary.main' : 'grey.200',
                                                     borderRadius: 2,
                                                     transition: 'all 0.2s ease',
-                                                    '&:hover': { borderColor: 'primary.main', transform: 'translateY(-2px)', boxShadow: 2 },
+                                                    ...(!variant.is_current && {
+                                                        '&:hover': { borderColor: 'primary.main', transform: 'translateY(-2px)', boxShadow: 2 }
+                                                    }),
                                                     width: 140,
+                                                    position: 'relative',
+                                                    bgcolor: variant.is_current ? 'primary.50' : 'background.paper',
                                                 }}
-                                                onClick={() => navigate(`/product/${variant.id}`)}
+                                                onClick={() => !variant.is_current && navigate(`/product/${variant.id}`)}
                                             >
-                                                {variant.image && (
-                                                    <CardMedia
-                                                        component="img"
-                                                        image={getImageUrl(variant.image) || ''}
-                                                        alt={variant.title}
-                                                        sx={{ height: 120, objectFit: 'cover' }}
-                                                    />
+                                            {variant.is_current && (
+                                                <Chip 
+                                                    label="Selected" 
+                                                    size="small" 
+                                                    color="primary"
+                                                    sx={{ 
+                                                        position: 'absolute', 
+                                                        top: 8, 
+                                                        right: 8, 
+                                                        zIndex: 1,
+                                                        height: 20,
+                                                        fontSize: '0.65rem',
+                                                    }} 
+                                                />
+                                            )}
+                                            {variant.image && (
+                                                <CardMedia
+                                                    component="img"
+                                                    image={getImageUrl(variant.image) || ''}
+                                                    alt={variant.title}
+                                                    sx={{ 
+                                                        height: 120, 
+                                                        objectFit: 'cover',
+                                                        opacity: variant.is_current ? 1 : 0.9,
+                                                    }}
+                                                />
+                                            )}
+                                            <Box sx={{ p: 1.5 }}>
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        fontWeight: 600,
+                                                        fontSize: '0.75rem',
+                                                        mb: 0.5,
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap',
+                                                        color: variant.is_current ? 'primary.main' : 'text.primary',
+                                                    }}
+                                                >
+                                                    {Object.entries(variant.attributes)
+                                                        .map(([_, value]) => String(value))
+                                                        .join(' • ') || 'Variant'}
+                                                </Typography>
+                                                <Typography 
+                                                    variant="body2" 
+                                                    sx={{ 
+                                                        fontWeight: 700, 
+                                                        color: variant.is_current ? 'primary.main' : 'text.secondary', 
+                                                        fontSize: '0.875rem' 
+                                                    }}
+                                                >
+                                                    ${variant.price.toFixed(2)}
+                                                </Typography>
+                                                {variant.stock === 0 && (
+                                                    <Chip label="Out of Stock" size="small" color="error" sx={{ mt: 0.5, height: 18, fontSize: '0.65rem' }} />
                                                 )}
-                                                <Box sx={{ p: 1.5 }}>
-                                                    <Typography
-                                                        variant="body2"
-                                                        sx={{
-                                                            fontWeight: 600,
-                                                            fontSize: '0.75rem',
-                                                            mb: 0.5,
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            whiteSpace: 'nowrap',
-                                                        }}
-                                                    >
-                                                        {Object.entries(variant.attributes)
-                                                            .map(([_, value]) => String(value))
-                                                            .reduce<JSX.Element | null>(
-                                                                (prev, curr) => (prev ? <>{prev} • {curr}</> : <>{curr}</>),
-                                                                null
-                                                            ) || 'Variant'}
-                                                    </Typography>
-                                                    <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.main', fontSize: '0.875rem' }}>
-                                                        ${variant.price.toFixed(2)}
-                                                    </Typography>
-                                                    {variant.stock === 0 && (
-                                                        <Chip label="Out of Stock" size="small" color="error" sx={{ mt: 0.5, height: 18, fontSize: '0.65rem' }} />
-                                                    )}
-                                                </Box>
+                                            </Box>
                                             </Card>
                                         ))}
                                     </Box>

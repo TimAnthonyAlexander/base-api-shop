@@ -7,6 +7,7 @@ export interface ProductVariant {
   stock: number;
   image: string | null;
   attributes: Record<string, string>;
+  is_current: boolean;
 }
 
 export interface GetProductVariantsResponse {
