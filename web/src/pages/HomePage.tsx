@@ -10,7 +10,6 @@ import {
   TextField,
   InputAdornment,
   CircularProgress,
-  Alert,
 } from '@mui/material';
 import { Search, ShoppingBag } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
