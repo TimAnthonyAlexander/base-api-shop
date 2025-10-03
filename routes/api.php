@@ -13,11 +13,34 @@ use App\Controllers\FileUploadController;
 use App\Controllers\OpenApiController;
 use App\Controllers\OrderController;
 use App\Controllers\ProductController;
+use App\Controllers\ProductSearchController;
+use App\Controllers\ProductRecommendationsController;
 use BaseApi\Http\Middleware\AuthMiddleware;
 use BaseApi\Http\Middleware\RateLimitMiddleware;
 
 $router = App::router();
 
+// Product endpoints
+$router->get(
+    '/products',
+    [
+        ProductController::class,
+    ],
+);
+
+$router->get(
+    '/products/search',
+    [
+        ProductSearchController::class,
+    ],
+);
+
+$router->get(
+    '/products/recommendations',
+    [
+        ProductRecommendationsController::class,
+    ],
+);
 
 $router->get(
     '/product/{id}',

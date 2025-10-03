@@ -6,6 +6,63 @@ import { buildPath } from './routes';
 import * as Types from './types';
 
 /**
+ * GET /products
+ * @tags API
+ */
+export async function getProduct(query?: Types.GetProductQueryParams, options?: HttpOptions): Promise<Types.GetProductResponse> {
+  const url = '/products';
+  const searchParams = new URLSearchParams();
+  if (query) {
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        searchParams.append(key, String(value));
+      }
+    }
+  }
+  const fullUrl = searchParams.toString() ? `${url}?${searchParams}` : url;
+
+  return http.get(fullUrl, options);
+}
+
+/**
+ * GET /products/search
+ * @tags API
+ */
+export async function getProductSearch(query?: Types.GetProductSearchQueryParams, options?: HttpOptions): Promise<Types.GetProductSearchResponse> {
+  const url = '/products/search';
+  const searchParams = new URLSearchParams();
+  if (query) {
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        searchParams.append(key, String(value));
+      }
+    }
+  }
+  const fullUrl = searchParams.toString() ? `${url}?${searchParams}` : url;
+
+  return http.get(fullUrl, options);
+}
+
+/**
+ * GET /products/recommendations
+ * @tags API
+ */
+export async function getProductRecommendations(query?: Types.GetProductRecommendationsQueryParams, options?: HttpOptions): Promise<Types.GetProductRecommendationsResponse> {
+  const url = '/products/recommendations';
+  const searchParams = new URLSearchParams();
+  if (query) {
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        searchParams.append(key, String(value));
+      }
+    }
+  }
+  const fullUrl = searchParams.toString() ? `${url}?${searchParams}` : url;
+
+  return http.get(fullUrl, options);
+}
+
+/**
  * GET /product/{id}
  * @tags API
  */

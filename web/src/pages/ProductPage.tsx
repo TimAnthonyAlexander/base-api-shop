@@ -8,13 +8,31 @@ import {
   CardMedia,
   Chip,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 import { ShoppingCart, ArrowBack } from '@mui/icons-material';
-import { usePostBasket } from '../hooks';
+import { usePostBasket, useGetProductById } from '../hooks';
 import { useState } from 'react';
 
-// Same placeholder data as HomePage
-const placeholderProducts = [
+// Placeholder images for products
+const placeholderImages = [
+  'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1200&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=1200&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1627123424574-724758594e93?w=1200&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=1200&h=800&fit=crop',
+];
+
+// Fallback product data for display purposes
+const placeholderFeatures = [
+  'High Quality',
+  'Fast Shipping',
+  'Satisfaction Guaranteed',
+  'Easy Returns',
+];
+
+const fallbackPlaceholderProducts = [
   {
     id: '1',
     title: 'Premium Wireless Headphones',
@@ -82,6 +100,13 @@ export default function ProductPage() {
   const navigate = useNavigate();
   const [successMessage, setSuccessMessage] = useState('');
   
+  // Fetch product from API
+  const { data: productData, loading: loadingProduct, error } = useGetProductById(
+    { id: id || '' },
+    undefined,
+    { enabled: !!id }
+  );
+
   const { mutate: addToBasket, loading } = usePostBasket({
     onSuccess: () => {
       setSuccessMessage('Added to basket!');
@@ -92,7 +117,31 @@ export default function ProductPage() {
     },
   });
 
-  const product = placeholderProducts.find(p => p.id === id);
+  if (loadingProduct) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 8, textAlign: 'center' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (error || !productData) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Product not found or failed to load
+        </Alert>
+        <Button onClick={() => navigate('/')} sx={{ mt: 2 }}>
+          Back to Home
+        </Button>
+      </Container>
+    );
+  }
+
+  const apiProduct = (productData?.data as any)?.product;
+  
+  // Use API product or fallback to placeholder
+  const product = apiProduct || fallbackPlaceholderProducts.find((p: any) => p.id === id);
 
   if (!product) {
     return (
@@ -113,6 +162,13 @@ export default function ProductPage() {
       },
     });
   };
+
+  // Get image (use placeholder based on ID hash)
+  const imageIndex = product.id ? parseInt(product.id.slice(0, 8), 16) % placeholderImages.length : 0;
+  const productImage = placeholderImages[imageIndex];
+  
+  // Get features (use placeholder or parse from description)
+  const productFeatures = product.features || placeholderFeatures;
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
@@ -141,7 +197,7 @@ export default function ProductPage() {
           <Card elevation={0}>
             <CardMedia
               component="img"
-              image={product.image}
+              image={productImage}
               alt={product.title}
               sx={{
                 borderRadius: 3,
@@ -178,27 +234,29 @@ export default function ProductPage() {
             />
 
             <Typography variant="body1" color="text.secondary" sx={{ mb: 4, lineHeight: 1.8 }}>
-              {product.longDescription}
+              {product.longDescription || product.description || 'No description available'}
             </Typography>
 
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Features
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {product.features.map((feature, index) => (
-                  <Chip
-                    key={index}
-                    label={feature}
-                    variant="outlined"
-                    sx={{
-                      borderColor: 'secondary.main',
-                      color: 'secondary.main',
-                    }}
-                  />
-                ))}
+            {productFeatures && productFeatures.length > 0 && (
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Features
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {productFeatures.map((feature: string, index: number) => (
+                    <Chip
+                      key={index}
+                      label={feature}
+                      variant="outlined"
+                      sx={{
+                        borderColor: 'secondary.main',
+                        color: 'secondary.main',
+                      }}
+                    />
+                  ))}
+                </Box>
               </Box>
-            </Box>
+            )}
 
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Button

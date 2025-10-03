@@ -25,14 +25,24 @@ class ProductController extends Controller
 
     public function get(): JsonResponse
     {
-        $product = Product::find($this->id);
+        // If ID is provided, get single product
+        if ($this->id !== '') {
+            $product = Product::find($this->id);
 
-        if (!$product instanceof Product) {
-            return JsonResponse::notFound('Product not found');
+            if (!$product instanceof Product) {
+                return JsonResponse::notFound('Product not found');
+            }
+
+            return JsonResponse::ok([
+                'product' => $product,
+            ]);
         }
 
+        // Otherwise, list all products
+        $products = Product::all();
+
         return JsonResponse::ok([
-            'product' => $product,
+            'products' => $products,
         ]);
     }
 

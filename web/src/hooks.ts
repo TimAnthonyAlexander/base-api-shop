@@ -28,6 +28,117 @@ export interface MutationResult<T, TVariables> {
 }
 
 /**
+ * React hook for GET /products
+ * Auto-fetches on mount and when dependencies change
+ */
+export function useGetProduct(query?: Types.GetProductQueryParams, options?: QueryOptions<Types.GetProductResponse>, deps?: DependencyList): QueryResult<Types.GetProductResponse> {
+  const [data, setData] = useState<Types.GetProductResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const enabled = options?.enabled ?? true;
+
+  const fetchData = useCallback(async () => {
+    if (!enabled) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const result = await Api.getProduct(query, options);
+      setData(result);
+      options?.onSuccess?.(result);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error);
+      options?.onError?.(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [enabled, JSON.stringify(query), ...(deps || [])]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { data, loading, error, refetch: fetchData };
+}
+
+/**
+ * React hook for GET /products/search
+ * Auto-fetches on mount and when dependencies change
+ */
+export function useGetProductSearch(query?: Types.GetProductSearchQueryParams, options?: QueryOptions<Types.GetProductSearchResponse>, deps?: DependencyList): QueryResult<Types.GetProductSearchResponse> {
+  const [data, setData] = useState<Types.GetProductSearchResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const enabled = options?.enabled ?? true;
+
+  const fetchData = useCallback(async () => {
+    if (!enabled) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const result = await Api.getProductSearch(query, options);
+      setData(result);
+      options?.onSuccess?.(result);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error);
+      options?.onError?.(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [enabled, JSON.stringify(query), ...(deps || [])]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { data, loading, error, refetch: fetchData };
+}
+
+/**
+ * React hook for GET /products/recommendations
+ * Auto-fetches on mount and when dependencies change
+ */
+export function useGetProductRecommendations(query?: Types.GetProductRecommendationsQueryParams, options?: QueryOptions<Types.GetProductRecommendationsResponse>, deps?: DependencyList): QueryResult<Types.GetProductRecommendationsResponse> {
+  const [data, setData] = useState<Types.GetProductRecommendationsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const enabled = options?.enabled ?? true;
+
+  const fetchData = useCallback(async () => {
+    if (!enabled) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const result = await Api.getProductRecommendations(query, options);
+      setData(result);
+      options?.onSuccess?.(result);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error);
+      options?.onError?.(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [enabled, JSON.stringify(query), ...(deps || [])]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { data, loading, error, refetch: fetchData };
+}
+
+/**
  * React hook for GET /product/{id}
  * Auto-fetches on mount and when dependencies change
  */

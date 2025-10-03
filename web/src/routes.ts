@@ -2,6 +2,9 @@
 // Do not edit manually - regenerate with: ./mason types:generate
 
 export const Routes = {
+  GetProduct: '/products',
+  GetProductSearch: '/products/search',
+  GetProductRecommendations: '/products/recommendations',
   GetProductById: '/product/{id}',
   PostProduct: '/product',
   GetBasket: '/basket',

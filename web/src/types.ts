@@ -22,6 +22,28 @@ export interface User {
   updated_at?: string | null;
 }
 
+export interface GetProductQueryParams {
+  id?: string;
+  title?: string;
+  description?: string | null;
+  price: number;
+  stock: number;
+}
+
+export type GetProductResponse = Envelope<unknown>;
+
+export interface GetProductSearchQueryParams {
+  query?: string;
+}
+
+export type GetProductSearchResponse = Envelope<unknown>;
+
+export interface GetProductRecommendationsQueryParams {
+  limit?: number;
+}
+
+export type GetProductRecommendationsResponse = Envelope<unknown>;
+
 export interface GetProductByIdPathParams {
   id: string;
   [key: string]: string | number | null;
