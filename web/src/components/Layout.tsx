@@ -90,6 +90,13 @@ export default function Layout() {
                         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                             <Button
                                 component={RouterLink}
+                                to="/"
+                                sx={{ color: 'text.primary', display: { xs: 'none', sm: 'inline-flex' } }}
+                            >
+                                Home
+                            </Button>
+                            <Button
+                                component={RouterLink}
                                 to="/orders"
                                 sx={{ color: 'text.primary', display: { xs: 'none', sm: 'inline-flex' } }}
                             >
