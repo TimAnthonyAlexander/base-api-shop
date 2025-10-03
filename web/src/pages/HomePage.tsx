@@ -32,7 +32,7 @@ export default function HomePage() {
 
     // Fetch recommendations (shown when not searching)
     const { data: recommendationsData, loading: loadingRecommendations } = useGetProductRecommendations(
-        { limit: 99 },
+        { limit: 33 },
         { enabled: !debouncedQuery }
     );
 
@@ -142,8 +142,8 @@ export default function HomePage() {
                             }}
                         >
                             {products.map((product: any) => {
-                                const imagePath = product.images && product.images.length > 0 
-                                    ? product.images[0] 
+                                const imagePath = product.images && product.images.length > 0
+                                    ? product.images[0]
                                     : null;
                                 const imageUrl = getImageUrl(imagePath);
 
@@ -182,40 +182,40 @@ export default function HomePage() {
                                             </Box>
                                         )}
                                         <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                                        <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
-                                            {product.title}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                            {product.description || 'No description available'}
-                                        </Typography>
-                                        <Typography
-                                            variant="h6"
-                                            sx={{
-                                                fontWeight: 700,
-                                                background: 'linear-gradient(135deg, #1a1a1a 0%, #6366f1 100%)',
-                                                backgroundClip: 'text',
-                                                WebkitBackgroundClip: 'text',
-                                                WebkitTextFillColor: 'transparent',
-                                            }}
-                                        >
-                                            ${Number(product.price || 0).toFixed(2)}
-                                        </Typography>
-                                    </CardContent>
-                                    <CardActions sx={{ p: 3, pt: 0 }}>
-                                        <Button
-                                            fullWidth
-                                            variant="contained"
-                                            startIcon={<ShoppingBag />}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                navigate(`/product/${product.id}`);
-                                            }}
-                                        >
-                                            View Details
-                                        </Button>
-                                    </CardActions>
-                                </Card>
-                            );
+                                            <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
+                                                {product.title}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                                {product.description || 'No description available'}
+                                            </Typography>
+                                            <Typography
+                                                variant="h6"
+                                                sx={{
+                                                    fontWeight: 700,
+                                                    background: 'linear-gradient(135deg, #1a1a1a 0%, #6366f1 100%)',
+                                                    backgroundClip: 'text',
+                                                    WebkitBackgroundClip: 'text',
+                                                    WebkitTextFillColor: 'transparent',
+                                                }}
+                                            >
+                                                ${Number(product.price || 0).toFixed(2)}
+                                            </Typography>
+                                        </CardContent>
+                                        <CardActions sx={{ p: 3, pt: 0 }}>
+                                            <Button
+                                                fullWidth
+                                                variant="contained"
+                                                startIcon={<ShoppingBag />}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigate(`/product/${product.id}`);
+                                                }}
+                                            >
+                                                View Details
+                                            </Button>
+                                        </CardActions>
+                                    </Card>
+                                );
                             })}
                         </Box>
 
