@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use BaseApi\Database\Relations\BelongsTo;
+use BaseApi\Database\Relations\HasMany;
 use BaseApi\Models\BaseModel;
 
 /**
@@ -62,22 +63,8 @@ class OrderItem extends BaseModel
         return $this->belongsTo(Product::class);
     }
 
-    // hasMany (one-to-many) - this model has many of another
-    // Example: User has many Posts
-    // /** @var Post[] */
-    // public array $posts = [];  // Add this property for the relation
-    //
-    // public function posts(): HasMany  
-    // {
-    //     return $this->hasMany(Post::class);
-    // }
-
-    // Usage examples:
-    // $model = OrderItem::find('some-id');
-    // $relatedModel = $model->user()->get();  // Get related model
-    // $relatedModels = $model->posts()->get(); // Get array of related models
-    // 
-    // Eager loading:
-    // $modelsWithRelations = OrderItem::with(['user', 'posts'])->get();
+    public function items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }
-

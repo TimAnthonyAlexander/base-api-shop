@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Models\Basket;
 use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
 use BaseApi\Controllers\Controller;
 use BaseApi\Http\JsonResponse;
 
@@ -19,8 +21,49 @@ class OrderController extends Controller
     public function get(): JsonResponse
     {
         if ($this->id === null) {
+            $orders = Order::where('user_id', '=', $this->request->user['id'])->get();
+
+            // Manually load items and calculate totals
+            $ordersWithDetails = [];
+            foreach ($orders as $order) {
+                assert($order instanceof Order);
+                $orderData = [
+                    'id' => $order->id,
+                    'user_id' => $order->user_id,
+                    'status' => $order->status,
+                    'created_at' => $order->created_at,
+                    'updated_at' => $order->updated_at,
+                    'items' => [],
+                    'total' => 0.0,
+                ];
+
+                foreach ($order->items()->get() as $baseModel) {
+                    assert($baseModel instanceof OrderItem);
+                    $product = $baseModel->product()->first();
+
+                    if ($product instanceof Product) {
+                        $itemData = [
+                            'id' => $baseModel->id,
+                            'order_id' => $baseModel->order_id,
+                            'product_id' => $baseModel->product_id,
+                            'quantity' => $baseModel->quantity,
+                            'product' => [
+                                'id' => $product->id,
+                                'title' => $product->title,
+                                'description' => $product->description,
+                                'price' => $product->price,
+                            ],
+                        ];
+                        $orderData['items'][] = $itemData;
+                        $orderData['total'] += $product->price * $baseModel->quantity;
+                    }
+                }
+
+                $ordersWithDetails[] = $orderData;
+            }
+
             return JsonResponse::ok([
-                'orders' => Order::where('user_id', '=', $this->request->user['id'])->get(),
+                'orders' => $ordersWithDetails,
             ]);
         }
 
@@ -30,12 +73,45 @@ class OrderController extends Controller
             return JsonResponse::notFound('Order not found');
         }
 
-        if (!$order->user_id === $this->request->user['id']) {
+        if ($order->user_id !== $this->request->user['id']) {
             return JsonResponse::forbidden('You do not own this order');
         }
 
+        // Build order details with items
+        $orderData = [
+            'id' => $order->id,
+            'user_id' => $order->user_id,
+            'status' => $order->status,
+            'created_at' => $order->created_at,
+            'updated_at' => $order->updated_at,
+            'items' => [],
+            'total' => 0.0,
+        ];
+
+        foreach ($order->items()->get() as $baseModel) {
+            assert($baseModel instanceof OrderItem);
+            $product = $baseModel->product()->first();
+
+            if ($product instanceof Product) {
+                $itemData = [
+                    'id' => $baseModel->id,
+                    'order_id' => $baseModel->order_id,
+                    'product_id' => $baseModel->product_id,
+                    'quantity' => $baseModel->quantity,
+                    'product' => [
+                        'id' => $product->id,
+                        'title' => $product->title,
+                        'description' => $product->description,
+                        'price' => $product->price,
+                    ],
+                ];
+                $orderData['items'][] = $itemData;
+                $orderData['total'] += $product->price * $baseModel->quantity;
+            }
+        }
+
         return JsonResponse::ok([
-            'order' => $order,
+            'order' => $orderData,
         ]);
     }
 
