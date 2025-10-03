@@ -24,21 +24,14 @@ class ProductSearchController extends Controller
             ]);
         }
 
-        // Get all products and filter by search query
-        $allProducts = Product::all();
-        $searchQuery = strtolower($this->query);
-
-        $filteredProducts = array_filter($allProducts, function ($product) use ($searchQuery): bool {
-            $titleMatch = str_contains(strtolower($product->title ?? ''), $searchQuery);
-            $descriptionMatch = str_contains(strtolower($product->description ?? ''), $searchQuery);
-            
-            return $titleMatch || $descriptionMatch;
-        });
+        $foundProducts = Product::whereConditions([
+            ['column' => 'title', 'operator' => 'LIKE', 'value' => '%' . $this->query . '%'],
+            ['column' => 'description', 'operator' => 'LIKE', 'value' => '%' . $this->query . '%'],
+        ], true)->get();
 
         return JsonResponse::ok([
-            'products' => array_values($filteredProducts),
+            'products' => $foundProducts,
             'query' => $this->query,
         ]);
     }
 }
-
