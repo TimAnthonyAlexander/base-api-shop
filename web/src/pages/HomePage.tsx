@@ -41,7 +41,7 @@ export default function HomePage() {
 
     // Fetch recommendations (shown when not searching)
     const { data: recommendationsData, loading: loadingRecommendations } = useGetProductRecommendations(
-        { limit: 100 },
+        { limit: 99 },
         { enabled: !debouncedQuery }
     );
 
