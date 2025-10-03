@@ -134,6 +134,10 @@ class BasketController extends Controller
         $basket->save();
 
         if ($basketItem instanceof BasketItem) {
+            if ($product->stock <= $basketItem->quantity) {
+                return JsonResponse::badRequest('Not enough stock for this product');
+            }
+
             $basketItem->quantity += 1;
             $basketItem->save();
 
