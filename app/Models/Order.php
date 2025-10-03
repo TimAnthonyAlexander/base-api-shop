@@ -27,6 +27,9 @@ class Order extends BaseModel
         $order = new self();
         $order->user_id = $basket->user_id;
         $order->status = 'pending';
+        $order->total_price = 0.0;
+        $order->save(); // Save order first to get valid ID
+        
         $totalPrice = 0.0;
 
         foreach ($basket->items()->get() as $baseModel) {
@@ -50,7 +53,7 @@ class Order extends BaseModel
         }
 
         $order->total_price = $totalPrice;
-        $order->save();
+        $order->save(); // Update with final total
 
         return $order;
     }
