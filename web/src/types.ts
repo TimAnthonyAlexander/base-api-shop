@@ -24,7 +24,7 @@ export interface User {
 
 export interface GetProductByIdPathParams {
   id: string;
-  [key: string]: string | number;
+  [key: string]: string | number | null;
 }
 
 export interface GetProductByIdQueryParams {
