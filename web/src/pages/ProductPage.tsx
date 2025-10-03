@@ -13,6 +13,7 @@ import {
 import { ShoppingCart, ArrowBack, ImageNotSupported } from '@mui/icons-material';
 import { usePostBasket, useGetProductById } from '../hooks';
 import { useState } from 'react';
+import { getImageUrl } from '../http';
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -80,7 +81,8 @@ export default function ProductPage() {
   };
 
   // Get first image from product
-  const productImage = product.images && product.images.length > 0 ? product.images[0] : null;
+  const imagePath = product.images && product.images.length > 0 ? product.images[0] : null;
+  const productImage = getImageUrl(imagePath);
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>

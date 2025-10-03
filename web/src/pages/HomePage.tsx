@@ -15,6 +15,7 @@ import { Search, ShoppingBag, ImageNotSupported } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useGetProductRecommendations, useGetProductSearch } from '../hooks';
+import { getImageUrl } from '../http';
 
 export default function HomePage() {
     const navigate = useNavigate();
@@ -141,9 +142,10 @@ export default function HomePage() {
                             }}
                         >
                             {products.map((product: any) => {
-                                const imageUrl = product.images && product.images.length > 0 
+                                const imagePath = product.images && product.images.length > 0 
                                     ? product.images[0] 
                                     : null;
+                                const imageUrl = getImageUrl(imagePath);
 
                                 return (
                                     <Card

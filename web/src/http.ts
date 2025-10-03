@@ -25,10 +25,26 @@ export class ApiError extends Error {
     }
 }
 
-const BASE_URL =
+export const BASE_URL =
     import.meta.env.MODE === 'production'
         ? 'https://shop-api.timanthonyalexander.de'
         : 'http://127.0.0.1:8822';
+
+/**
+ * Convert a relative image path to a full API URL
+ * @param path - Relative path like "storage/products/image.jpg"
+ * @returns Full URL to the image on the API server
+ */
+export function getImageUrl(path: string | null | undefined): string | null {
+    if (!path) return null;
+    // If it's already a full URL, return as-is
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+    }
+    // Remove leading slash if present
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${BASE_URL}/${cleanPath}`;
+}
 
 async function fetchApi<T>(
     path: string,

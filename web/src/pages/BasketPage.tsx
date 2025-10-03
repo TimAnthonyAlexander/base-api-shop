@@ -13,6 +13,7 @@ import { Add, Remove, Delete, ShoppingBag, ImageNotSupported } from '@mui/icons-
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useGetBasket, usePostBasket } from '../hooks';
+import { getImageUrl } from '../http';
 
 export default function BasketPage() {
   const navigate = useNavigate();
@@ -112,9 +113,10 @@ export default function BasketPage() {
         >
           <Box>
             {items.map((item: any) => {
-              const imageUrl = item.product?.images && item.product.images.length > 0 
+              const imagePath = item.product?.images && item.product.images.length > 0 
                 ? item.product.images[0] 
                 : null;
+              const imageUrl = getImageUrl(imagePath);
 
               return (
                 <Card key={item.id} sx={{ mb: 2, p: 2 }}>

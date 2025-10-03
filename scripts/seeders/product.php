@@ -7,14 +7,50 @@ namespace Scripts\Seeders;
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use App\Models\Product;
+use App\Models\ProductImage;
 use BaseApi\App;
 use Faker\Factory as FakerFactory;
 
 App::boot(__DIR__ . '/../..');
 
 $count = (int)($argv[1] ?? 500);
+$imagesPerProduct = (int)($argv[2] ?? 3); // Number of images per product
 
 $faker = FakerFactory::create('en_US');
+
+// Ensure storage/public directory exists
+$storagePublicPath = __DIR__ . '/../../storage/public';
+if (!is_dir($storagePublicPath)) {
+    mkdir($storagePublicPath, 0755, true);
+    echo "Created storage/public directory\n";
+}
+
+// Create products subdirectory
+$productsImagePath = $storagePublicPath . '/products';
+if (!is_dir($productsImagePath)) {
+    mkdir($productsImagePath, 0755, true);
+    echo "Created storage/public/products directory\n";
+}
+
+/**
+ * Download an image from a URL and save it to a file
+ */
+function downloadImage(string $url, string $filepath): bool
+{
+    $context = stream_context_create([
+        'http' => [
+            'timeout' => 10,
+            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        ],
+    ]);
+    
+    $imageData = @file_get_contents($url, false, $context);
+    if ($imageData === false) {
+        return false;
+    }
+    
+    return file_put_contents($filepath, $imageData) !== false;
+}
 
 $adjectives = ['Ultra', 'Smart', 'Compact', 'Portable', 'Premium', 'Classic', 'Eco', 'Wireless', 'Pro', 'Mini', 'Max', 'Advanced', 'Elegant', 'Rugged', 'Silent', 'Rapid', 'Crystal', 'Aero', 'Magnetic', 'Fusion'];
 $materials = ['Steel', 'Aluminum', 'Carbon', 'Bamboo', 'Titanium', 'Ceramic', 'Glass', 'Leather', 'Wool', 'Cotton', 'Silicone', 'Granite', 'Oak', 'Maple'];
@@ -51,7 +87,31 @@ for ($i = 0; $i < $count; $i++) {
     $p->views = (int)$views;
     $p->save();
 
-    if (($i + 1) % 100 === 0) echo ($i + 1) . PHP_EOL;
+    // Download and save product images
+    $numImages = $faker->numberBetween(1, $imagesPerProduct);
+    for ($j = 0; $j < $numImages; $j++) {
+        // Use picsum.photos for random product images
+        // Vary dimensions slightly for variety
+        $width = $faker->randomElement([800, 1000, 1200]);
+        $height = $faker->randomElement([600, 800, 1000]);
+        
+        $imageFilename = sprintf('product_%s_%d.jpg', $p->id, $j + 1);
+        $imagePath = $productsImagePath . '/' . $imageFilename;
+        
+        // Download the image
+        $imageUrl = sprintf('https://picsum.photos/%d/%d', $width, $height);
+        $downloaded = downloadImage($imageUrl, $imagePath);
+        
+        if ($downloaded) {
+            // Create ProductImage record
+            $productImage = new ProductImage();
+            $productImage->product_id = $p->id;
+            $productImage->image_path = 'storage/products/' . $imageFilename;
+            $productImage->save();
+        }
+    }
+
+    if (($i + 1) % 10 === 0) echo ($i + 1) . PHP_EOL;
 }
 
 echo 'Seeded ' . $count . ' products.' . PHP_EOL;
