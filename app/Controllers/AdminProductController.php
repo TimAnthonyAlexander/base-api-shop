@@ -49,10 +49,13 @@ class AdminProductController extends Controller
 
             // Get product images
             $images = $product->images()->get();
-            $imageUrls = [];
+            $imageData = [];
             foreach ($images as $image) {
                 if ($image instanceof ProductImage) {
-                    $imageUrls[] = $image->image_path;
+                    $imageData[] = [
+                        'id' => $image->id,
+                        'path' => $image->image_path,
+                    ];
                 }
             }
 
@@ -63,7 +66,7 @@ class AdminProductController extends Controller
                 'price' => $product->price,
                 'stock' => $product->stock,
                 'views' => $product->views,
-                'images' => $imageUrls,
+                'images' => $imageData,
                 'created_at' => $product->created_at,
                 'updated_at' => $product->updated_at,
             ];
@@ -85,10 +88,13 @@ class AdminProductController extends Controller
         foreach ($paginatedProducts as $paginatedProduct) {
             if ($paginatedProduct instanceof Product) {
                 $images = $paginatedProduct->images()->get();
-                $imageUrls = [];
+                $imageData = [];
                 foreach ($images as $image) {
                     if ($image instanceof ProductImage) {
-                        $imageUrls[] = $image->image_path;
+                        $imageData[] = [
+                            'id' => $image->id,
+                            'path' => $image->image_path,
+                        ];
                     }
                 }
 
@@ -99,7 +105,7 @@ class AdminProductController extends Controller
                     'price' => $paginatedProduct->price,
                     'stock' => $paginatedProduct->stock,
                     'views' => $paginatedProduct->views,
-                    'images' => $imageUrls,
+                    'images' => $imageData,
                     'created_at' => $paginatedProduct->created_at,
                     'updated_at' => $paginatedProduct->updated_at,
                 ];
@@ -197,10 +203,13 @@ class AdminProductController extends Controller
 
         // Get product images
         $images = $product->images()->get();
-        $imageUrls = [];
+        $imageData = [];
         foreach ($images as $image) {
             if ($image instanceof ProductImage) {
-                $imageUrls[] = $image->image_path;
+                $imageData[] = [
+                    'id' => $image->id,
+                    'path' => $image->image_path,
+                ];
             }
         }
 
@@ -212,7 +221,7 @@ class AdminProductController extends Controller
                 'price' => $product->price,
                 'stock' => $product->stock,
                 'views' => $product->views,
-                'images' => $imageUrls,
+                'images' => $imageData,
                 'created_at' => $product->created_at,
                 'updated_at' => $product->updated_at,
             ],

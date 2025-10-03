@@ -49,6 +49,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGetMe } from '../hooks';
 import { useTheme } from '../contexts/ThemeContext';
 import { themeConfigs, type ThemeName } from '../themes';
+import { getImageUrl } from '../http';
 import {
     postAdminTheme,
     getAdminProducts,
@@ -860,13 +861,11 @@ export default function AdminDashboard() {
                                                 gap: 2,
                                             }}
                                         >
-                                            {editingProduct.images.map((imagePath, index) => {
-                                                // Extract image ID from path (assuming format like storage/products/product_{id}_{imageId}.jpg)
-                                                // We'll need to get the actual image ID from the backend
-                                                // For now, we'll just show the images
+                                            {editingProduct.images.map((image, index) => {
+                                                const imageUrl = getImageUrl(image.path) || '';
                                                 return (
                                                     <Box
-                                                        key={index}
+                                                        key={image.id}
                                                         sx={{
                                                             position: 'relative',
                                                             borderRadius: 1,
@@ -877,7 +876,7 @@ export default function AdminDashboard() {
                                                         }}
                                                     >
                                                         <img
-                                                            src={`/${imagePath}`}
+                                                            src={imageUrl}
                                                             alt={`Product ${index + 1}`}
                                                             style={{
                                                                 width: '100%',
@@ -910,11 +909,7 @@ export default function AdminDashboard() {
                                                                     bgcolor: 'rgba(255, 255, 255, 1)',
                                                                 },
                                                             }}
-                                                            onClick={() => {
-                                                                // We need to implement getting the actual image ID
-                                                                // For now, this is a placeholder
-                                                                console.log('Delete image:', imagePath);
-                                                            }}
+                                                            onClick={() => handleImageDelete(image.id)}
                                                         >
                                                             <Delete fontSize="small" color="error" />
                                                         </IconButton>

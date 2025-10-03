@@ -39,6 +39,11 @@ export async function postAdminTheme(
 // Product Management
 // ============================================
 
+export interface ProductImage {
+  id: string;
+  path: string;
+}
+
 export interface Product {
   id: string;
   title: string;
@@ -46,7 +51,7 @@ export interface Product {
   price: number;
   stock: number;
   views: number;
-  images: string[];
+  images: ProductImage[];
   created_at: string;
   updated_at: string;
 }
