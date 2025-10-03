@@ -17,7 +17,7 @@ class ProductRecommendationsController extends Controller
 
     public function get(): JsonResponse
     {
-        $allProducts = Product::where('stock', '>=', 1)->limit($this->limit)->get();
+        $allProducts = Product::where('stock', '>=', 1)->orderBy('views', 'desc')->limit($this->limit)->get();
 
         return JsonResponse::ok([
             'products' => $allProducts,

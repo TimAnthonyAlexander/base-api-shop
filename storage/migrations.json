@@ -270,6 +270,33 @@
             "table": "basket",
             "operation": "modify_column",
             "warning": null
+        },
+        {
+            "id": "mig_05a992e77b90",
+            "sql": "ALTER TABLE `product` ADD COLUMN `views` INT NOT NULL DEFAULT '0'",
+            "destructive": false,
+            "generated_at": "2025-10-03T09:11:59+00:00",
+            "table": "product",
+            "operation": "add_column",
+            "warning": null
+        },
+        {
+            "id": "mig_f5da0a843385",
+            "sql": "ALTER TABLE `product` ADD INDEX `idx_product_stock` (`stock`)",
+            "destructive": false,
+            "generated_at": "2025-10-03T09:11:59+00:00",
+            "table": "product",
+            "operation": "add_index",
+            "warning": null
+        },
+        {
+            "id": "mig_caa116523f39",
+            "sql": "ALTER TABLE `product` ADD INDEX `idx_product_views` (`views`)",
+            "destructive": false,
+            "generated_at": "2025-10-03T09:11:59+00:00",
+            "table": "product",
+            "operation": "add_index",
+            "warning": null
         }
     ]
 }

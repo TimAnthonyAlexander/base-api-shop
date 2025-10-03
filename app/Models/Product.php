@@ -17,8 +17,12 @@ class Product extends BaseModel
 
     public int $stock = 0;
 
+    public int $views = 0;
+
     public static array $indexes = [
         'title' => 'index',
         'price' => 'index',
+        'stock' => 'index',
+        'views' => 'index',
     ];
 }

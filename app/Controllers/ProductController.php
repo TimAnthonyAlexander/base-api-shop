@@ -33,6 +33,9 @@ class ProductController extends Controller
                 return JsonResponse::notFound('Product not found');
             }
 
+            $product->views += 1;
+            $product->save();
+
             return JsonResponse::ok([
                 'product' => $product,
             ]);
