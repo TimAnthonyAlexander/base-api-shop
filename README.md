@@ -16,9 +16,17 @@ Frontend built in web/ using React + MUI.
 ## Screenshots
 
 <img src="recommendations.png" alt="Product Recommendations" width="600"/>
+Super quickly loads hundreds of product recommendations on the homepage.
+
 <img src="product.png" alt="Product Details" width="600"/>
+Detailed product pages with images, descriptions, and stock status. Add to basket with one click.
+
 <img src="basket.png" alt="Shopping Basket" width="600"/>
+Basket view with all items, quantities, subtotal, shipping, and total. Modify quantities or remove items.
+Proceed to Stripe checkout automatically. (Set stripe secret in .env)
+
 <img src="themes.png" alt="Light and Dark Themes" width="600"/>
+Admin Dashboard with various themes (that apply for all users). View orders, products, and users.
 
 ## Requirements
 
