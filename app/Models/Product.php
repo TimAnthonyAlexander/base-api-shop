@@ -25,4 +25,8 @@ class Product extends BaseModel
         'stock' => 'index',
         'views' => 'index',
     ];
+
+    public static array $columns = [
+        'description' => ['type' => 'TEXT', 'nullable' => true],
+    ];
 }

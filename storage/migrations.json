@@ -297,6 +297,15 @@
             "table": "product",
             "operation": "add_index",
             "warning": null
+        },
+        {
+            "id": "mig_ea8f7ce2754e",
+            "sql": "ALTER TABLE `product` MODIFY COLUMN `description` TEXT",
+            "destructive": false,
+            "generated_at": "2025-10-03T10:03:42+00:00",
+            "table": "product",
+            "operation": "modify_column",
+            "warning": null
         }
     ]
 }
