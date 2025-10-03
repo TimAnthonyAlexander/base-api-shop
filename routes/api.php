@@ -19,6 +19,7 @@ use App\Controllers\OrderController;
 use App\Controllers\ProductController;
 use App\Controllers\ProductSearchController;
 use App\Controllers\ProductRecommendationsController;
+use App\Controllers\ProductVariantsController;
 use App\Controllers\ThemeController;
 use App\Middleware\AdminMiddleware;
 use BaseApi\Http\Middleware\AuthMiddleware;
@@ -52,6 +53,13 @@ $router->get(
     '/product/{id}',
     [
         ProductController::class,
+    ],
+);
+
+$router->get(
+    '/product/{id}/variants',
+    [
+        ProductVariantsController::class,
     ],
 );
 

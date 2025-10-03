@@ -16,6 +16,7 @@ App::boot(__DIR__ . '/../..');
 
 $count = (int)($argv[1] ?? 500);
 $imagesPerProduct = (int)($argv[2] ?? 3); // Number of images per product
+$variantPercentage = 0.3; // 30% of products will have variants
 
 $faker = FakerFactory::create('en_US');
 
@@ -59,21 +60,75 @@ $nouns = ['Speaker', 'Headphones', 'Backpack', 'Watch', 'Lamp', 'Mug', 'Notebook
 $series = ['S', 'X', 'Z', 'Prime', 'Edge', 'Plus', 'Lite', 'Air', 'Go'];
 
 $titles = [];
+$variantGroups = []; // Track variant groups
+$productsCreated = 0;
+
 for ($i = 0; $i < $count; $i++) {
-    $tries = 0;
-    do {
-        $title = $faker->randomElement($adjectives) . ' ' . $faker->randomElement($materials) . ' ' . $faker->randomElement($nouns);
-        if ($faker->boolean(40)) $title .= ' ' . $faker->randomElement($series);
-        if ($faker->boolean(30)) $title .= ' ' . $faker->numberBetween(2, 9);
-        $tries++;
-    } while (isset($titles[$title]) && $tries < 5);
-    if (isset($titles[$title])) $title .= ' ' . strtoupper($faker->bothify('##?'));
+    // Decide if this product should be part of a variant group
+    $shouldCreateVariant = $faker->boolean($variantPercentage * 100);
+    $variantGroupId = null;
+    $baseTitle = '';
+    $baseDescription = '';
+    $basePrice = 0.0;
+    
+    if ($shouldCreateVariant && count($variantGroups) > 0 && $faker->boolean(70)) {
+        // Add to existing variant group (70% chance if groups exist)
+        $variantGroupId = $faker->randomElement(array_keys($variantGroups));
+        $baseTitle = $variantGroups[$variantGroupId]['title'];
+        $baseDescription = $variantGroups[$variantGroupId]['description'];
+        $basePrice = $variantGroups[$variantGroupId]['price'];
+    } else if ($shouldCreateVariant) {
+        // Create new variant group
+        $variantGroupId = $faker->uuid;
+        
+        $tries = 0;
+        do {
+            $baseTitle = $faker->randomElement($adjectives) . ' ' . $faker->randomElement($materials) . ' ' . $faker->randomElement($nouns);
+            if ($faker->boolean(40)) $baseTitle .= ' ' . $faker->randomElement($series);
+            if ($faker->boolean(30)) $baseTitle .= ' ' . $faker->numberBetween(2, 9);
+            $tries++;
+        } while (isset($titles[$baseTitle]) && $tries < 5);
+        
+        $baseDescription = $faker->catchPhrase . '. ' . implode(' ', $faker->paragraphs($faker->numberBetween(1, 3)));
+        $basePrice = (float)number_format($faker->randomFloat(2, 4.99, 2499.0), 2, '.', '');
+        if ($faker->boolean(10)) $basePrice = (float)number_format($basePrice * 0.8, 2, '.', '');
+        
+        $variantGroups[$variantGroupId] = [
+            'title' => $baseTitle,
+            'description' => $baseDescription,
+            'price' => $basePrice,
+            'count' => 0,
+        ];
+    }
+    
+    // Generate product title (with variant name if applicable)
+    if ($variantGroupId) {
+        $title = $baseTitle;
+        $description = $baseDescription;
+        $price = $basePrice;
+        // Add slight price variation for variants
+        if ($variantGroups[$variantGroupId]['count'] > 0) {
+            $priceVariation = $faker->randomFloat(2, -50, 100);
+            $price = max(4.99, $price + $priceVariation);
+        }
+        $variantGroups[$variantGroupId]['count']++;
+    } else {
+        // Regular product without variants
+        $tries = 0;
+        do {
+            $title = $faker->randomElement($adjectives) . ' ' . $faker->randomElement($materials) . ' ' . $faker->randomElement($nouns);
+            if ($faker->boolean(40)) $title .= ' ' . $faker->randomElement($series);
+            if ($faker->boolean(30)) $title .= ' ' . $faker->numberBetween(2, 9);
+            $tries++;
+        } while (isset($titles[$title]) && $tries < 5);
+        if (isset($titles[$title])) $title .= ' ' . strtoupper($faker->bothify('##?'));
+        
+        $description = $faker->catchPhrase . '. ' . implode(' ', $faker->paragraphs($faker->numberBetween(1, 3)));
+        $price = (float)number_format($faker->randomFloat(2, 4.99, 2499.0), 2, '.', '');
+        if ($faker->boolean(10)) $price = (float)number_format($price * 0.8, 2, '.', '');
+    }
+    
     $titles[$title] = true;
-
-    $description = $faker->catchPhrase . '. ' . implode(' ', $faker->paragraphs($faker->numberBetween(1, 3)));
-
-    $price = (float)number_format($faker->randomFloat(2, 4.99, 2499.0), 2, '.', '');
-    if ($faker->boolean(10)) $price = (float)number_format($price * 0.8, 2, '.', '');
 
     $stock = $faker->biasedNumberBetween(0, 250, function ($x) {
         return 1 - sqrt($x / 250);
@@ -86,6 +141,7 @@ for ($i = 0; $i < $count; $i++) {
     $p->price = $price;
     $p->stock = (int)$stock;
     $p->views = (int)$views;
+    $p->variant_group = $variantGroupId;
     $p->save();
 
     // Download and save product images
@@ -128,6 +184,14 @@ for ($i = 0; $i < $count; $i++) {
     $numAttributes = $faker->numberBetween(2, 5);
     $selectedAttributeTypes = $faker->randomElements(array_keys($attributeTypes), $numAttributes);
     
+    // For variants, ensure they have differentiating attributes
+    if ($p->variant_group !== null && !in_array('Color', $selectedAttributeTypes)) {
+        $selectedAttributeTypes[] = 'Color';
+    }
+    if ($p->variant_group !== null && !in_array('Size', $selectedAttributeTypes) && $faker->boolean(60)) {
+        $selectedAttributeTypes[] = 'Size';
+    }
+    
     foreach ($selectedAttributeTypes as $attributeType) {
         $attributeValue = $faker->randomElement($attributeTypes[$attributeType]);
         
@@ -141,4 +205,9 @@ for ($i = 0; $i < $count; $i++) {
     if (($i + 1) % 10 === 0) echo ($i + 1) . PHP_EOL;
 }
 
+// Output summary
+$totalVariantGroups = count($variantGroups);
+$totalVariants = array_sum(array_column($variantGroups, 'count'));
+
 echo 'Seeded ' . $count . ' products.' . PHP_EOL;
+echo 'Created ' . $totalVariantGroups . ' variant groups with ' . $totalVariants . ' total variants.' . PHP_EOL;

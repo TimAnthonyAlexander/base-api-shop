@@ -22,11 +22,14 @@ class Product extends BaseModel
 
     public int $views = 0;
 
+    public ?string $variant_group = null;
+
     public static array $indexes = [
         'title' => 'index',
         'price' => 'index',
         'stock' => 'index',
         'views' => 'index',
+        'variant_group' => 'index',
     ];
 
     public static array $columns = [

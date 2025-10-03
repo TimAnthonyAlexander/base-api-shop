@@ -387,6 +387,33 @@
             "table": "product",
             "operation": "add_column",
             "warning": null
+        },
+        {
+            "id": "mig_008a5891660f",
+            "sql": "ALTER TABLE `product` ADD COLUMN `variant_group` VARCHAR(255)",
+            "destructive": false,
+            "generated_at": "2025-10-03T15:44:17+00:00",
+            "table": "product",
+            "operation": "add_column",
+            "warning": null
+        },
+        {
+            "id": "mig_ad2d085505c2",
+            "sql": "ALTER TABLE `product` MODIFY COLUMN `longDescription` LONGTEXT",
+            "destructive": true,
+            "generated_at": "2025-10-03T15:44:17+00:00",
+            "table": "product",
+            "operation": "modify_column",
+            "warning": null
+        },
+        {
+            "id": "mig_36436f827da9",
+            "sql": "ALTER TABLE `product` ADD INDEX `idx_product_variant_group` (`variant_group`)",
+            "destructive": false,
+            "generated_at": "2025-10-03T15:44:17+00:00",
+            "table": "product",
+            "operation": "add_index",
+            "warning": null
         }
     ]
 }
