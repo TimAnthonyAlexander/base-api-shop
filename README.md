@@ -25,6 +25,12 @@ Detailed product pages with images, descriptions, and stock status. Add to baske
 Basket view with all items, quantities, subtotal, shipping, and total. Modify quantities or remove items.
 Proceed to Stripe checkout automatically. (Set stripe secret in .env)
 
+<img src="products.png" alt="Product List" width="600"/>
+List all products in the admin dashboard. Edit or delete products, create new ones.
+
+<img src="orders.png" alt="Order List" width="600"/>
+List all orders, pending and completed. View order details and customer information. Cancel or fulfill orders.
+
 <img src="themes.png" alt="Light and Dark Themes" width="600"/>
 Admin Dashboard with various themes (that apply for all users). View orders, products, and users.
 
