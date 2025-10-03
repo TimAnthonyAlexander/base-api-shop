@@ -342,6 +342,42 @@
             "table": "order_item",
             "operation": "add_column",
             "warning": null
+        },
+        {
+            "id": "mig_7eea744cb2d0",
+            "sql": "CREATE TABLE `product_attribute` (\n  `product_id` VARCHAR(36) NOT NULL,\n  `attribute` VARCHAR(255) NOT NULL,\n  `value` TEXT NOT NULL,\n  `id` VARCHAR(36) NOT NULL DEFAULT '',\n  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,\n  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+            "destructive": false,
+            "generated_at": "2025-10-03T15:29:50+00:00",
+            "table": "product_attribute",
+            "operation": "create_table",
+            "warning": null
+        },
+        {
+            "id": "mig_c02d9a6774e3",
+            "sql": "ALTER TABLE `product_attribute` ADD INDEX `idx_product_attribute_product_id` (`product_id`)",
+            "destructive": false,
+            "generated_at": "2025-10-03T15:29:50+00:00",
+            "table": "product_attribute",
+            "operation": "add_index",
+            "warning": null
+        },
+        {
+            "id": "mig_d0ae6b824c58",
+            "sql": "ALTER TABLE `product_attribute` ADD INDEX `idx_product_attribute_attribute` (`attribute`)",
+            "destructive": false,
+            "generated_at": "2025-10-03T15:29:50+00:00",
+            "table": "product_attribute",
+            "operation": "add_index",
+            "warning": null
+        },
+        {
+            "id": "mig_c47eb1cd22fa",
+            "sql": "ALTER TABLE `product_attribute` ADD CONSTRAINT `fk_product_attribute_product_id` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE ON UPDATE CASCADE",
+            "destructive": false,
+            "generated_at": "2025-10-03T15:29:50+00:00",
+            "table": "product_attribute",
+            "operation": "add_fk",
+            "warning": null
         }
     ]
 }
