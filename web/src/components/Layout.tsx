@@ -91,34 +91,36 @@ export default function Layout() {
                             <Button
                                 component={RouterLink}
                                 to="/"
-                                sx={{ color: 'text.primary', display: { xs: 'none', sm: 'inline-flex' } }}
+                                sx={{ color: 'text.primary', display: { xs: 'none', sm: 'inline-flex' }, px: 1, }}
                             >
                                 Home
                             </Button>
-                            <Button
-                                component={RouterLink}
-                                to="/orders"
-                                sx={{ color: 'text.primary', display: { xs: 'none', sm: 'inline-flex' } }}
-                            >
-                                Orders
-                            </Button>
+                            {isAuthenticated &&
+                                <Button
+                                    component={RouterLink}
+                                    to="/orders"
+                                    sx={{ color: 'text.primary', display: { xs: 'none', sm: 'inline-flex' }, px: 1 }}
+                                >
+                                    Orders
+                                </Button>
+                            }
 
                             {isAdmin && (
                                 <Button
                                     component={RouterLink}
                                     to="/admin"
-                                    startIcon={<AdminPanelSettings />}
                                     sx={{
                                         color: 'text.primary',
                                         display: { xs: 'none', md: 'inline-flex' },
                                         fontWeight: 600,
+                                        px: 1,
                                     }}
                                 >
                                     Admin
                                 </Button>
                             )}
 
-                            <IconButton component={RouterLink} to="/basket" sx={{ color: 'text.primary' }}>
+                            <IconButton component={RouterLink} to="/basket" sx={{ color: 'text.primary', ml: 2 }}>
                                 <Badge badgeContent={basketCount} color="secondary">
                                     <ShoppingCart />
                                 </Badge>
