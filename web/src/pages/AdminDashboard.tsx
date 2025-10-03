@@ -13,6 +13,7 @@ import {
     Divider,
     Paper,
     CircularProgress,
+    Grid,
 } from '@mui/material';
 import {
     Palette,
@@ -61,10 +62,14 @@ export default function AdminDashboard() {
     if (userError) {
         return (
             <Container maxWidth="lg" sx={{ py: 8 }}>
-                <Alert severity="error" sx={{ mb: 2 }}>
+                <Alert severity="error" sx={{ mb: 3, border: 1, borderColor: 'divider', boxShadow: 'none' }}>
                     Please log in as an administrator to access this page.
                 </Alert>
-                <Button variant="contained" onClick={() => navigate('/auth')}>
+                <Button
+                    variant="contained"
+                    onClick={() => navigate('/auth')}
+                    sx={{ boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
+                >
                     Go to Login
                 </Button>
             </Container>
@@ -72,16 +77,12 @@ export default function AdminDashboard() {
     }
 
     const user = (userData?.data as any)?.user || (userData?.data as any);
-
-    if (user?.role !== 'admin') {
-        return null; // Will redirect in useEffect
-    }
+    if (user?.role !== 'admin') return null;
 
     const handleSaveTheme = async () => {
         setSaving(true);
         setErrorMessage('');
         setSuccessMessage('');
-
         try {
             await postAdminTheme({ theme: selectedTheme });
             await refetchTheme();
@@ -95,204 +96,232 @@ export default function AdminDashboard() {
         }
     };
 
+    const panel = {
+        p: 3,
+        border: 1,
+        borderColor: 'divider',
+        borderRadius: 2,
+        bgcolor: 'background.paper',
+        boxShadow: 'none',
+    };
+
+    const statPanel = {
+        ...panel,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1.5,
+    };
+
+    const iconBadge = {
+        width: 36,
+        height: 36,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '10px',
+        bgcolor: 'action.hover',
+        color: 'text.primary',
+    };
+
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 6 }}>
-            <Container maxWidth="lg">
-                <Box sx={{ mb: 6 }}>
-                    <Typography variant="h2" sx={{ mb: 2, fontSize: { xs: '2.5rem', md: '3.5rem' } }}>
+            <Container maxWidth="lg" sx={{ display: 'grid', gap: 3 }}>
+                <Box sx={{ display: 'grid', gap: 1 }}>
+                    <Typography variant="h3" sx={{ letterSpacing: 0.2 }}>
                         Admin Dashboard
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                        Manage your store's appearance, view analytics, and oversee operations.
+                        Manage appearance, analytics, and operations.
                     </Typography>
                 </Box>
 
                 {successMessage && (
-                    <Alert severity="success" sx={{ mb: 3 }}>
+                    <Alert severity="success" sx={{ ...panel, mb: 0 }}>
                         {successMessage}
                     </Alert>
                 )}
 
                 {errorMessage && (
-                    <Alert severity="error" sx={{ mb: 3 }}>
+                    <Alert severity="error" sx={{ ...panel, mb: 0 }}>
                         {errorMessage}
                     </Alert>
                 )}
 
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    {/* Theme Selector Card */}
-                    <Card sx={{ p: 3 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                            <Palette sx={{ fontSize: 32, mr: 2, color: 'secondary.main' }} />
-                            <Box>
-                                <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                                    Theme Settings
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Choose the theme that all users will see
-                                </Typography>
-                            </Box>
+                <Card variant="outlined" sx={{ ...panel }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                        <Box sx={iconBadge}>
+                            <Palette fontSize="small" />
                         </Box>
-
-                        <Divider sx={{ mb: 3 }} />
-
-                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, alignItems: 'center' }}>
-                            <Box sx={{ flex: 1, width: '100%' }}>
-                                <FormControl fullWidth>
-                                    <InputLabel>Select Theme</InputLabel>
-                                    <Select
-                                        value={selectedTheme}
-                                        label="Select Theme"
-                                        onChange={(e) => setSelectedTheme(e.target.value as ThemeName)}
-                                    >
-                                        {themeConfigs.map((config) => (
-                                            <MenuItem key={config.name} value={config.name}>
-                                                <Box>
-                                                    <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                                                        {config.label}
-                                                    </Typography>
-                                                    <Typography variant="caption" color="text.secondary">
-                                                        {config.description}
-                                                    </Typography>
-                                                </Box>
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Box>
-                            <Box sx={{ width: { xs: '100%', md: 'auto' }, minWidth: { md: 200 } }}>
-                                <Button
-                                    fullWidth
-                                    variant="contained"
-                                    size="large"
-                                    startIcon={<Save />}
-                                    onClick={handleSaveTheme}
-                                    disabled={saving || selectedTheme === themeName}
-                                >
-                                    {saving ? 'Saving...' : 'Apply Theme'}
-                                </Button>
-                            </Box>
-                        </Box>
-
-                        <Box sx={{ mt: 3, p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
-                            <Typography variant="caption" color="text.secondary">
-                                <strong>Current Theme:</strong> {themeConfigs.find(c => c.name === themeName)?.label || 'Luxury'}
-                                {selectedTheme !== themeName && (
-                                    <> • <strong style={{ color: 'orange' }}>Unsaved changes</strong></>
-                                )}
+                        <Box>
+                            <Typography variant="h6">Theme Settings</Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Choose the theme that all users will see
                             </Typography>
                         </Box>
-                    </Card>
+                    </Box>
 
-                    {/* Stats Overview */}
-                    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
-                        <Paper
-                            sx={{
-                                p: 3,
-                                flex: 1,
-                                background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%)',
-                            }}
+                    <Divider sx={{ mb: 3 }} />
+
+                    <Box
+                        sx={{
+                            display: 'grid',
+                            gridTemplateColumns: { xs: '1fr', md: '1fr auto' },
+                            gap: 2,
+                            alignItems: 'center',
+                        }}
+                    >
+                        <FormControl fullWidth>
+                            <InputLabel>Select Theme</InputLabel>
+                            <Select
+                                value={selectedTheme}
+                                label="Select Theme"
+                                onChange={(e) => setSelectedTheme(e.target.value as ThemeName)}
+                                MenuProps={{ PaperProps: { elevation: 0, sx: { border: 1, borderColor: 'divider' } } }}
+                            >
+                                {themeConfigs.map((config) => (
+                                    <MenuItem key={config.name} value={config.name}>
+                                        <Box sx={{ display: 'grid' }}>
+                                            <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                                                {config.label}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary">
+                                                {config.description}
+                                            </Typography>
+                                        </Box>
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
+                        <Button
+                            variant="contained"
+                            size="large"
+                            startIcon={<Save />}
+                            onClick={handleSaveTheme}
+                            disabled={saving || selectedTheme === themeName}
+                            sx={{ minWidth: 200, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
                         >
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <TrendingUp sx={{ fontSize: 28, mr: 1.5, color: 'secondary.main' }} />
-                                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                            {saving ? 'Saving...' : 'Apply Theme'}
+                        </Button>
+                    </Box>
+
+                    <Box sx={{ mt: 3, px: 2, py: 1.5, borderRadius: 1.5, border: 1, borderColor: 'divider' }}>
+                        <Typography variant="caption" color="text.secondary">
+                            <strong>Current Theme:</strong>{' '}
+                            {themeConfigs.find((c) => c.name === themeName)?.label || 'Luxury'}
+                            {selectedTheme !== themeName && <> • <strong style={{ color: 'orange' }}>Unsaved changes</strong></>}
+                        </Typography>
+                    </Box>
+                </Card>
+
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                        <Paper variant="outlined" sx={statPanel}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                <Box sx={iconBadge}>
+                                    <TrendingUp fontSize="small" />
+                                </Box>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                                     Total Sales
                                 </Typography>
                             </Box>
-                            <Typography variant="h3" sx={{ mb: 1, fontWeight: 700 }}>
+                            <Typography variant="h3" sx={{ fontWeight: 700 }}>
                                 $0.00
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 Coming soon: Real-time sales analytics
                             </Typography>
                         </Paper>
+                    </Grid>
 
-                        <Paper
-                            sx={{
-                                p: 3,
-                                flex: 1,
-                                background: 'linear-gradient(135deg, rgba(244, 114, 182, 0.1) 0%, rgba(244, 114, 182, 0.05) 100%)',
-                            }}
-                        >
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <ShoppingCart sx={{ fontSize: 28, mr: 1.5, color: 'secondary.main' }} />
-                                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    <Grid item xs={12} md={4}>
+                        <Paper variant="outlined" sx={statPanel}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                <Box sx={iconBadge}>
+                                    <ShoppingCart fontSize="small" />
+                                </Box>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                                     Orders
                                 </Typography>
                             </Box>
-                            <Typography variant="h3" sx={{ mb: 1, fontWeight: 700 }}>
+                            <Typography variant="h3" sx={{ fontWeight: 700 }}>
                                 0
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 Coming soon: Order management dashboard
                             </Typography>
                         </Paper>
+                    </Grid>
 
-                        <Paper
-                            sx={{
-                                p: 3,
-                                flex: 1,
-                                background: 'linear-gradient(135deg, rgba(132, 204, 22, 0.1) 0%, rgba(132, 204, 22, 0.05) 100%)',
-                            }}
-                        >
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <People sx={{ fontSize: 28, mr: 1.5, color: 'secondary.main' }} />
-                                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    <Grid item xs={12} md={4}>
+                        <Paper variant="outlined" sx={statPanel}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                <Box sx={iconBadge}>
+                                    <People fontSize="small" />
+                                </Box>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                                     Users
                                 </Typography>
                             </Box>
-                            <Typography variant="h3" sx={{ mb: 1, fontWeight: 700 }}>
+                            <Typography variant="h3" sx={{ fontWeight: 700 }}>
                                 0
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 Coming soon: User management tools
                             </Typography>
                         </Paper>
-                    </Box>
+                    </Grid>
+                </Grid>
 
-                    {/* Coming Soon Sections */}
-                    <Card sx={{ p: 4 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
-                            Coming Soon
-                        </Typography>
-                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-                            <Box sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-                                    📊 Sales Analytics
+                <Card variant="outlined" sx={{ ...panel, p: 3.5 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                        Coming Soon
+                    </Typography>
+
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <Box sx={{ ...panel, p: 2 }}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                    Sales Analytics
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
                                     Detailed sales reports, revenue tracking, and performance metrics
                                 </Typography>
                             </Box>
-                            <Box sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-                                    📦 Order Management
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Box sx={{ ...panel, p: 2 }}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                    Order Management
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
                                     View, filter, and manage customer orders in real-time
                                 </Typography>
                             </Box>
-                            <Box sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-                                    👥 User Management
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Box sx={{ ...panel, p: 2 }}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                    User Management
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
                                     Manage user accounts, roles, and permissions
                                 </Typography>
                             </Box>
-                            <Box sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-                                    📈 Analytics Dashboard
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Box sx={{ ...panel, p: 2 }}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                    Analytics Dashboard
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
                                     Comprehensive charts and graphs for business insights
                                 </Typography>
                             </Box>
-                        </Box>
-                    </Card>
-                </Box>
+                        </Grid>
+                    </Grid>
+                </Card>
             </Container>
         </Box>
     );
 }
-
