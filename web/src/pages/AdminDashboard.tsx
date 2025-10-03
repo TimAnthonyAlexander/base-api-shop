@@ -271,11 +271,26 @@ export default function AdminDashboard() {
             if (editingProduct) {
                 await updateAdminProduct(editingProduct.id, productForm as UpdateProductBody);
                 setSuccessMessage('Product updated successfully!');
+                handleCloseProductDialog();
             } else {
-                await createAdminProduct(productForm);
-                setSuccessMessage('Product created successfully!');
+                const response = await createAdminProduct(productForm);
+                const newProduct = response.data.product;
+                setSuccessMessage('Product created successfully! You can now add images.');
+                
+                // Switch to edit mode with the newly created product
+                // Need to convert the response to match our Product interface
+                const productWithImages: Product = {
+                    ...newProduct,
+                    images: [],
+                };
+                setEditingProduct(productWithImages);
+                setProductForm({
+                    title: newProduct.title,
+                    description: newProduct.description || '',
+                    price: newProduct.price,
+                    stock: newProduct.stock,
+                });
             }
-            handleCloseProductDialog();
             loadProducts();
             loadAnalytics();
             setTimeout(() => setSuccessMessage(''), 3000);
@@ -787,7 +802,14 @@ export default function AdminDashboard() {
                         sx: { border: 1, borderColor: 'divider' },
                     }}
                 >
-                    <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+                    <DialogTitle>
+                        {editingProduct ? 'Edit Product' : 'Add New Product'}
+                        {editingProduct && (
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                                Product ID: {editingProduct.id}
+                            </Typography>
+                        )}
+                    </DialogTitle>
                     <DialogContent>
                         <Box sx={{ display: 'grid', gap: 2, pt: 2 }}>
                             <TextField
@@ -927,14 +949,27 @@ export default function AdminDashboard() {
                         </Box>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleCloseProductDialog}>Cancel</Button>
-                        <Button
-                            onClick={handleSaveProduct}
-                            variant="contained"
-                            sx={{ boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
-                        >
-                            {editingProduct ? 'Update' : 'Create'}
+                        <Button onClick={handleCloseProductDialog}>
+                            {editingProduct ? 'Close' : 'Cancel'}
                         </Button>
+                        {!editingProduct && (
+                            <Button
+                                onClick={handleSaveProduct}
+                                variant="contained"
+                                sx={{ boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
+                            >
+                                Create Product
+                            </Button>
+                        )}
+                        {editingProduct && (
+                            <Button
+                                onClick={handleSaveProduct}
+                                variant="contained"
+                                sx={{ boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
+                            >
+                                Update Product
+                            </Button>
+                        )}
                     </DialogActions>
                 </Dialog>
             </Container>
