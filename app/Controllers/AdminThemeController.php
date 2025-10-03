@@ -28,8 +28,7 @@ class AdminThemeController extends Controller
             'theme' => 'required|string',
         ]);
 
-        // Validate theme exists
-        $validThemes = ['luxury', 'ocean', 'sunset', 'forest', 'monochrome'];
+        $validThemes = ['luxury', 'monochrome', 'noir', 'graphite', 'platinum', 'eink'];
         if (!in_array($this->theme, $validThemes, true)) {
             return JsonResponse::error(
                 'Theme must be one of: ' . implode(', ', $validThemes),
