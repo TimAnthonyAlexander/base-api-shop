@@ -13,7 +13,7 @@ use BaseApi\Http\JsonResponse;
  */
 class ProductRecommendationsController extends Controller
 {
-    public int $limit = 6;
+    public int $limit = 100;
 
     public function get(): JsonResponse
     {
