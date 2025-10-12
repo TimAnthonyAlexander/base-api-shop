@@ -133,7 +133,7 @@ $router->get(
 
 // Health check
 $router->get('/health', [
-    RateLimitMiddleware::class => ['limit' => '60/1m'],
+    /* RateLimitMiddleware::class => ['limit' => '60/1m'], */
     HealthController::class,
 ]);
 
